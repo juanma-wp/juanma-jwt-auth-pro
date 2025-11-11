@@ -7,14 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-11-11
+
+### Fixed
+- **Security Enhancements**:
+  - Replaced `esc_sql()` with proper table name validation for database identifiers
+  - Enhanced database query security with prepared statements throughout the codebase
+  - Added proper validation for table names to prevent SQL injection vulnerabilities
+  - Fixed table name validation in deactivate() method
+
 ### Changed
-- **Architecture Refactoring**: Cookie configuration moved to shared toolkit
-  - Migrated `JWT_Cookie_Config` implementation to `wp-rest-auth-toolkit` package
-  - Converted plugin class to lightweight wrapper (~140 lines vs ~500 lines)
-  - Maintains full backwards compatibility with existing API
-  - Enables code sharing across multiple WordPress authentication plugins
-  - Optimized test suite: 11 focused integration tests (down from 32 redundant tests)
-  - Comprehensive functionality tests now in toolkit (21 tests, 62 assertions)
+- **Code Quality Improvements**:
+  - Replaced hardcoded version strings with `JMJAP_VERSION` constant for consistency
+  - Refactored plugin class names and updated constants for better naming consistency
+  - Updated constant references in `.wp-env.json` for JuanMa JWT Auth Pro
+  - Updated PHPStan configuration to include new constants
+
+## [1.2.0] - 2025-11-06
+
+### Changed
+- **Plugin Rebranding**: Complete transition from "JWT Auth Pro WP REST API" to "JuanMa JWT Auth Pro"
+  - Updated author information and package references across the codebase
+  - Refactored plugin name and namespace for improved clarity and consistency
+  - Updated all internal class names and constants to match new branding
+
+### Improved
+- **Architecture Refactoring**:
+  - Enhanced autoloading configuration for improved performance
+  - Refactored JWT secret handling and admin settings initialization
+  - Improved dependency management with local development configuration
+  - Updated namespace usage in JWT Admin Settings class
+  - Refactored option handling for better consistency
+
+### Added
+- **Developer Experience**:
+  - Added `.wp-env.override.json` to gitignore for improved environment management
+  - Enhanced toolkit management in composer.json with clean-up script
+  - Improved debugging capabilities and consistency checks
 
 ## [1.1.0] - 2025-10-03
 
@@ -38,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Code Standards**: All code now passes PHPCS WordPress-Extra ruleset
 - **Compatibility**: Improved PHP 7.4 compatibility throughout the codebase
 
-## [1.0.0] - 2025-09-29
+## [1.0.0] - 2025-09-30
 
 ### Added
 - **OpenAPI Specification**: Complete API documentation with Swagger UI integration
