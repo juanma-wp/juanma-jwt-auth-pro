@@ -133,7 +133,7 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 
 		// The secret is critical and must be set either in wp-config.php or admin.
 		// We'll check for it when actually needed, not during initialization.
-		// Don't define JWT_AUTH_PRO_SECRET here - let Auth_JWT check admin settings when needed.
+		// Don't define JMJAP_SECRET here - let Auth_JWT check admin settings when needed.
 		// This avoids loading admin classes during plugin initialization.
 
 		// Set default token expiration times if not defined in wp-config.php.
