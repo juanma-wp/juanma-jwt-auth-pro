@@ -13,8 +13,8 @@
     "JMJAP_ACCESS_TTL": 3600,
     "JMJAP_REFRESH_TTL": 86400
   },
-  "port": 8888,
-  "testsPort": 8889,
+  "port": 8891,
+  "testsPort": 8892,
   "env": {
     "tests": {
       "config": {

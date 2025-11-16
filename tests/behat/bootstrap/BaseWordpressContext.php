@@ -13,7 +13,7 @@ abstract class BaseWordpressContext implements Context
      *
      * @var string
      */
-    private $site_url = 'http://localhost:8889';
+    private $site_url = 'http://localhost:8892';
 
     /**
      * Get the WordPress site URL.

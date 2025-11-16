@@ -282,32 +282,20 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 
 	/**
 	 * Deactivate the plugin.
+	 *
+	 * Following WordPress standards: only clear temporary data on deactivation.
+	 * User data and settings are preserved for reactivation.
+	 * Complete removal happens via uninstall.php when plugin is deleted.
 	 */
 	public function deactivate(): void {
-		global $wpdb;
-
-		// Delete all refresh tokens from database table.
-		$table_name = $wpdb->prefix . 'jwt_refresh_tokens';
-
-		// Validate table name contains only safe characters (alphanumeric + underscore).
-		if ( ! preg_match( '/^[a-zA-Z0-9_]+$/', $table_name ) ) {
-			return; // Invalid table name, abort to prevent SQL injection.
-		}
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "TRUNCATE TABLE `{$table_name}`" );
-
-		// Drop the refresh tokens table.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "DROP TABLE IF EXISTS `{$table_name}`" );
-
-		// Delete WordPress options.
-		delete_option( 'jwt_auth_pro_settings' );
-		delete_option( 'jwt_auth_pro_general_settings' );
-		delete_option( 'jwt_auth_cookie_config' );
+		// Clear any scheduled cron jobs for token cleanup.
+		wp_clear_scheduled_hook( 'jwt_auth_pro_clean_expired_tokens' );
 
 		// Clear any transients that might have been set.
 		delete_transient( 'jwt_auth_pro_version' );
+
+		// Flush rewrite rules to remove any custom endpoints.
+		flush_rewrite_rules();
 	}
 
 	/**

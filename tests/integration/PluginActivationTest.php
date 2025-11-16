@@ -126,8 +126,8 @@ class PluginActivationTest extends WP_UnitTestCase
 		// Run deactivation - should execute without errors.
 		$this->plugin->deactivate();
 
-		// Verify options are deleted.
-		$this->assertFalse(get_option('jwt_auth_pro_settings'));
+		// Verify options are PRESERVED (WordPress standard behavior).
+		$this->assertNotFalse(get_option('jwt_auth_pro_settings'), 'Options should be preserved on deactivation');
 
 		// Note: Table deletion cannot be verified due to transaction rollback,
 		// but we can verify the method completes without throwing exceptions.
@@ -135,9 +135,9 @@ class PluginActivationTest extends WP_UnitTestCase
 	}
 
 	/**
-	 * Test deactivation removes all WordPress options.
+	 * Test deactivation preserves WordPress options (WordPress standard).
 	 */
-	public function test_deactivation_removes_options(): void
+	public function test_deactivation_preserves_options(): void
 	{
 		// Set up options.
 		update_option('jwt_auth_pro_settings', [
@@ -166,10 +166,10 @@ class PluginActivationTest extends WP_UnitTestCase
 		// Run deactivation.
 		$this->plugin->deactivate();
 
-		// Verify options are removed.
-		$this->assertFalse(get_option('jwt_auth_pro_settings'));
-		$this->assertFalse(get_option('jwt_auth_pro_general_settings'));
-		$this->assertFalse(get_option('jwt_auth_cookie_config'));
+		// Verify options are PRESERVED (WordPress standard behavior).
+		$this->assertNotFalse(get_option('jwt_auth_pro_settings'), 'JWT settings should be preserved');
+		$this->assertNotFalse(get_option('jwt_auth_pro_general_settings'), 'General settings should be preserved');
+		$this->assertNotFalse(get_option('jwt_auth_cookie_config'), 'Cookie config should be preserved');
 	}
 
 	/**
@@ -229,7 +229,8 @@ class PluginActivationTest extends WP_UnitTestCase
 	}
 
 	/**
-	 * Test complete activation and deactivation cycle for options cleanup.
+	 * Test complete activation and deactivation cycle.
+	 * Following WordPress standards: options persist, transients are cleared.
 	 */
 	public function test_full_activation_deactivation_cycle(): void
 	{
@@ -251,10 +252,11 @@ class PluginActivationTest extends WP_UnitTestCase
 		// Deactivate plugin.
 		$this->plugin->deactivate();
 
-		// Verify all options and transients are removed.
-		$this->assertFalse(get_option('jwt_auth_pro_settings'), 'JWT settings should be deleted');
-		$this->assertFalse(get_option('jwt_auth_pro_general_settings'), 'General settings should be deleted');
-		$this->assertFalse(get_option('jwt_auth_cookie_config'), 'Cookie config should be deleted');
+		// Verify options PERSIST (WordPress standard behavior).
+		$this->assertNotFalse(get_option('jwt_auth_pro_settings'), 'JWT settings should persist after deactivation');
+		$this->assertNotFalse(get_option('jwt_auth_pro_general_settings'), 'General settings should persist after deactivation');
+		$this->assertNotFalse(get_option('jwt_auth_cookie_config'), 'Cookie config should persist after deactivation');
+		// Transients should be cleared.
 		$this->assertFalse(get_transient('jwt_auth_pro_version'), 'Version transient should be deleted');
 	}
 
