@@ -25,8 +25,8 @@ $jmjap_table_name = $wpdb->prefix . 'jwt_refresh_tokens';
 // Validate table name contains only safe characters (alphanumeric + underscore).
 if ( preg_match( '/^[a-zA-Z0-9_]+$/', $jmjap_table_name ) ) {
 	// Drop the refresh tokens table.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
-	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $jmjap_table_name ) );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( 'DROP TABLE IF EXISTS `' . esc_sql( $jmjap_table_name ) . '`' );
 }
 
 // Delete all WordPress options created by the plugin.
