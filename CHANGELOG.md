@@ -7,21 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.1] - 2025-11-11
+## [1.2.1] - 2025-12-09
 
-### Fixed
-- **Security Enhancements**:
+### Security
+- **Database Security Enhancements**:
   - Replaced `esc_sql()` with proper table name validation for database identifiers
   - Enhanced database query security with prepared statements throughout the codebase
   - Added proper validation for table names to prevent SQL injection vulnerabilities
-  - Fixed table name validation in deactivate() method
+  - Refactored database queries for refresh tokens with improved security measures
+
+### Fixed
+- **Plugin Review Fixes** (merged from branch `fix/plugin-review-nov-9`):
+  - Fixed table name validation in `deactivate()` method to remove unnecessary whitespace
+  - Corrected inline script and style enqueuing to use WordPress best practices
+  - Moved inline JavaScript and CSS to external files (`assets/admin.js` and `assets/admin.css`)
+  - Fixed nonce verification and security checks in admin settings
 
 ### Changed
 - **Code Quality Improvements**:
   - Replaced hardcoded version strings with `JMJAP_VERSION` constant for consistency
-  - Refactored plugin class names and updated constants for better naming consistency
-  - Updated constant references in `.wp-env.json` for JuanMa JWT Auth Pro
+  - Refactored plugin class names from generic naming to JuanMa JWT Auth Pro branding
+  - Updated all constant references throughout the codebase (e.g., `JWT_AUTH_PRO_*` to `JMJAP_*`)
+  - Updated `.wp-env.json` configuration with new constant names
   - Updated PHPStan configuration to include new constants
+  - Improved test suite with updated constant references
+
+### Improved
+- **Admin Interface**:
+  - Extracted inline styles and scripts to dedicated asset files for better maintainability
+  - Enhanced admin settings page with proper WordPress script/style enqueueing
+  - Improved tab navigation with proper nonce verification
+
+### Developer Experience
+- Removed unnecessary files from `.distignore`
+- Updated bootstrap files for unit and integration tests with new constants
+- Improved helper functions with updated constant references
 
 ## [1.2.0] - 2025-11-06
 
