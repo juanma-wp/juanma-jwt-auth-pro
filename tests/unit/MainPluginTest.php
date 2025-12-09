@@ -195,7 +195,8 @@ class MainPluginTest extends TestCase
 	}
 
 	/**
-	 * Test that deactivation properly cleans up database and options.
+	 * Test that deactivation properly cleans up temporary data.
+	 * Following WordPress standards: preserves user data, only clears temporary items.
 	 */
 	public function testDeactivationCleansUpDatabase(): void
 	{
@@ -224,21 +225,25 @@ class MainPluginTest extends TestCase
 	}
 
 	/**
-	 * Test that deactivation removes WordPress options.
+	 * Test that deactivation follows WordPress standards.
 	 */
 	public function testDeactivationRemovesOptions(): void
 	{
-		// This test verifies the deactivate method calls delete_option.
-		// In a real WordPress environment, we'd check with get_option.
+		// This test verifies the deactivate method exists and follows WordPress standards.
+		// In WordPress standard behavior, deactivation should:
+		// - Clear scheduled cron jobs
+		// - Clear transients
+		// - Flush rewrite rules
+		// But PRESERVE user data and settings
 
 		// For unit test, we verify the method exists and can be called.
 		$this->assertTrue(method_exists($this->plugin, 'deactivate'));
 
-		// The actual cleanup includes:
-		// - delete_option('jwt_auth_pro_settings')
-		// - delete_option('jwt_auth_pro_general_settings')
-		// - delete_option('jwt_auth_cookie_config')
+		// The deactivation now only clears temporary data:
+		// - wp_clear_scheduled_hook('jwt_auth_pro_clean_expired_tokens')
 		// - delete_transient('jwt_auth_pro_version')
+		// - flush_rewrite_rules()
+		// Settings and database tables are PRESERVED for reactivation
 
 		$this->plugin->deactivate();
 		$this->assertTrue(true);

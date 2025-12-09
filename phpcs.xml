@@ -35,10 +35,11 @@
 		<exclude name="WordPress.Files.FileName"/>
 	</rule>
 
-	<!-- Exclude vendor, node_modules and tests -->
+	<!-- Exclude vendor, node_modules, tests, and build directories -->
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>tests/*</exclude-pattern>
+	<exclude-pattern>build/*</exclude-pattern>
 	<exclude-pattern>wp-plugins-cache/*</exclude-pattern>
 	<exclude-pattern>wp-plugins-extracted/*</exclude-pattern>
 
