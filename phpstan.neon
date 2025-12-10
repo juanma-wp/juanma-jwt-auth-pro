@@ -1,8 +1,8 @@
 parameters:
 	level: 6
 	paths:
-		- juanma-jwt-auth-pro.php
-		- includes/
+		- plugin/juanma-jwt-auth-pro/juanma-jwt-auth-pro.php
+		- plugin/juanma-jwt-auth-pro/includes/
 	bootstrapFiles:
 		- tests/bootstrap-phpstan.php
 	excludePaths:
@@ -44,4 +44,4 @@ parameters:
 	checkFunctionNameCase: false
 	# Keep WordPress extension but use minimal config to save memory
 includes:
-	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+	- plugin/juanma-jwt-auth-pro/vendor/szepeviktor/phpstan-wordpress/extension.neon

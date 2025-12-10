@@ -38,9 +38,15 @@ class MainPluginTest extends TestCase
 	{
 		parent::setUp();
 
-		// Load the main plugin class.
+		// Load the main plugin class - different path depending on context
 		if (! class_exists('JuanMa_JWT_Auth_Pro_Plugin')) {
-			require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
+			// In wp-env, files are mounted directly
+			if (file_exists(dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php')) {
+				require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
+			} else {
+				// Local testing outside wp-env
+				require_once dirname(__DIR__, 2) . '/plugin/juanma-jwt-auth-pro/juanma-jwt-auth-pro.php';
+			}
 		}
 
 		// Define constants for testing.

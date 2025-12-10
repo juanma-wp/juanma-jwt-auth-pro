@@ -1,0 +1,36 @@
+{
+  "name": "juanma/jwt-auth-pro-plugin",
+  "description": "JWT Auth Pro Plugin - Production Dependencies",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=7.4",
+    "wp-rest-auth/auth-toolkit": "@dev"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/juanma-wp/wp-rest-auth-toolkit.git"
+    }
+  ],
+  "config": {
+    "platform": {
+      "php": "7.4.0"
+    },
+    "optimize-autoloader": true,
+    "classmap-authoritative": true,
+    "apcu-autoloader": true,
+    "autoloader-suffix": "JwtAuthProPlugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "JM_JWTAuthPro\\": "includes/"
+    },
+    "classmap": [
+      "includes/class-jwt-auth-pro-admin-settings.php",
+      "includes/class-jwt-cookie-config.php",
+      "includes/class-auth-jwt.php",
+      "includes/class-openapi-spec.php"
+    ]
+  }
+}

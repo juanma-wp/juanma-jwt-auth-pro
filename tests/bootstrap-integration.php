@@ -27,7 +27,7 @@ if ( ! defined( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
 }
 
 // Load Composer autoloader
-$composer_autoloader = dirname( __DIR__ ) . '/vendor/autoload.php';
+$composer_autoloader = dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php';
 if ( file_exists( $composer_autoloader ) ) {
 	require_once $composer_autoloader;
 } else {
@@ -68,12 +68,12 @@ function _manually_load_jwt_plugin() {
 		define( 'JMJAP_REFRESH_TTL', 86400 );
 	}
 
-	// Load the composer autoloader first
+	// Load the composer autoloader first - both vendor directories are mapped in wp-env
 	if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
 		require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 	}
 
-	// Load the plugin
+	// Load the plugin - it's mounted directly in wp-env
 	require dirname( __DIR__ ) . '/juanma-jwt-auth-pro.php';
 }
 

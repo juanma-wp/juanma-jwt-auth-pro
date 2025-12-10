@@ -1,6 +1,6 @@
 # Dependencies
 /node_modules/
-/vendor/
+vendor/
 
 # wp-env
 /.wp-env/
@@ -32,6 +32,9 @@ debug.log
 /tmp/
 
 *.zip
+
+# SVN checkout (for WordPress.org deployment)
+/svn-checkout/
 
 .claude/
 CLAUDE.local.md

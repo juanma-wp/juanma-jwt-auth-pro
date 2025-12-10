@@ -2,7 +2,10 @@
   "$schema": "https://schemas.wp.org/trunk/wp-env.json",
   "core": "WordPress/WordPress#6.8",
   "phpVersion": "8.1",
-  "plugins": [".", "https://downloads.wordpress.org/plugin/plugin-check.zip"],
+  "plugins": [
+    "./plugin/juanma-jwt-auth-pro",
+    "https://downloads.wordpress.org/plugin/plugin-check.zip"
+  ],
   "themes": ["WordPress/twentytwentyfour"],
   "config": {
     "WP_DEBUG": true,
@@ -28,6 +31,9 @@
     }
   },
   "mappings": {
-    "wp-content/mu-plugins": "./mu-plugins"
+    "wp-content/mu-plugins": "./mu-plugins",
+    "wp-content/plugins/juanma-jwt-auth-pro/tests": "./tests",
+    "wp-content/plugins/juanma-jwt-auth-pro/phpunit.xml": "./phpunit.xml",
+    "wp-content/plugins/juanma-jwt-auth-pro/vendor": "./vendor"
   }
 }
