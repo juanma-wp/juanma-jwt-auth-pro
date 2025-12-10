@@ -26,7 +26,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-interaction
+      run: |
+        composer install --prefer-dist --no-progress --no-interaction
+        cd plugin/juanma-jwt-auth-pro
+        composer install --prefer-dist --no-progress --no-interaction
 
     - name: Run PHPStan (Memory Optimized)
       run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress --no-ansi
