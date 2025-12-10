@@ -21,8 +21,11 @@
  */
 
 // Load Composer autoloaders - different paths for wp-env vs local
-if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
-	// In wp-env or local with root vendor
+if ( file_exists( dirname( __DIR__ ) . '/vendor-dev/autoload.php' ) ) {
+	// In wp-env, dev dependencies are mapped to vendor-dev
+	require_once dirname( __DIR__ ) . '/vendor-dev/autoload.php';
+} elseif ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
+	// Local testing with root vendor
 	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 } elseif ( file_exists( dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php' ) ) {
 	// Local testing with plugin vendor only

@@ -68,8 +68,12 @@ function _manually_load_jwt_plugin() {
 		define( 'JMJAP_REFRESH_TTL', 86400 );
 	}
 
-	// Load the composer autoloader first - both vendor directories are mapped in wp-env
-	if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
+	// Load the composer autoloaders - dev dependencies are in vendor-dev when in wp-env
+	if ( file_exists( dirname( __DIR__ ) . '/vendor-dev/autoload.php' ) ) {
+		// In wp-env, dev dependencies are mapped to vendor-dev
+		require_once dirname( __DIR__ ) . '/vendor-dev/autoload.php';
+	} elseif ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
+		// Local testing outside wp-env or plugin vendor
 		require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 	}
 

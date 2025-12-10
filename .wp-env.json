@@ -34,6 +34,6 @@
     "wp-content/mu-plugins": "./mu-plugins",
     "wp-content/plugins/juanma-jwt-auth-pro/tests": "./tests",
     "wp-content/plugins/juanma-jwt-auth-pro/phpunit.xml": "./phpunit.xml",
-    "wp-content/plugins/juanma-jwt-auth-pro/vendor": "./vendor"
+    "wp-content/plugins/juanma-jwt-auth-pro/vendor-dev": "./vendor"
   }
 }
