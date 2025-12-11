@@ -18,8 +18,8 @@
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./includes/</directory>
-            <file>./jwt-auth-pro-wp-rest-api.php</file>
+            <directory suffix=".php">./plugin/juanma-jwt-auth-pro/includes/</directory>
+            <file>./plugin/juanma-jwt-auth-pro/juanma-jwt-auth-pro.php</file>
         </include>
     </coverage>
 </phpunit>

@@ -41,9 +41,15 @@ class CookieConfigTest extends TestCase
 	{
 		parent::setUp();
 
-		// Load the cookie config class.
+		// Load the cookie config class - check both locations for CI and local
 		if (! class_exists('JuanMa_JWT_Auth_Pro_Cookie_Config')) {
-			require_once dirname(__DIR__, 2) . '/includes/class-jwt-cookie-config.php';
+			if (file_exists(dirname(__DIR__, 2) . '/includes/class-jwt-cookie-config.php')) {
+				// In wp-env, mounted directly
+				require_once dirname(__DIR__, 2) . '/includes/class-jwt-cookie-config.php';
+			} else {
+				// In CI or local, in plugin directory
+				require_once dirname(__DIR__, 2) . '/plugin/juanma-jwt-auth-pro/includes/class-jwt-cookie-config.php';
+			}
 		}
 
 		// Store original $_SERVER values.

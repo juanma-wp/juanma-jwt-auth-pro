@@ -19,19 +19,16 @@ jobs:
         php-version: '8.1'
         tools: composer:v2
 
-    - name: Install dependencies
-      run: composer install --no-dev --prefer-dist --no-progress --no-interaction
-
-    - name: Create distribution build
+    - name: Install plugin production dependencies
       run: |
-        mkdir -p juanma-jwt-auth-pro
-        rsync -a --exclude-from=.distignore ./ juanma-jwt-auth-pro/
+        cd plugin/juanma-jwt-auth-pro
+        composer install --no-dev --prefer-dist --no-progress --no-interaction
 
     - name: Run plugin check
       uses: wordpress/plugin-check-action@v1
       with:
         repo-token: ''
-        build-dir: './juanma-jwt-auth-pro'
+        build-dir: './plugin/juanma-jwt-auth-pro'
         checks: ''
         exclude-checks: ''
         categories: 'plugin_repo'

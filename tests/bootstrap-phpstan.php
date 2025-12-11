@@ -14,10 +14,16 @@
  * @since     1.0.0
  */
 
-// Load Composer autoloader to find wp-rest-auth-toolkit classes
+// Load root Composer autoloader
 $composer_autoloader = dirname( __DIR__ ) . '/vendor/autoload.php';
 if ( file_exists( $composer_autoloader ) ) {
 	require_once $composer_autoloader;
+}
+
+// Load plugin Composer autoloader to find wp-rest-auth-toolkit classes
+$plugin_autoloader = dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php';
+if ( file_exists( $plugin_autoloader ) ) {
+	require_once $plugin_autoloader;
 }
 
 // Only define essential constants that PHPStan actually needs

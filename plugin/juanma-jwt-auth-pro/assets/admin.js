@@ -22,14 +22,12 @@ jQuery(document).ready(function($) {
      */
     function bindEvents() {
         // Settings form validation
-        $('#wp-rest-auth-jwt-settings').on('submit', validateForm);
+        $('form').on('submit', validateForm);
 
-        // Real-time validation
-        $('input[name="wp_rest_auth_jwt_settings[secret_key]"]').on('blur', validateSecretKey);
-        $('input[name="wp_rest_auth_jwt_settings[token_expiry]"]').on('blur', validateTokenExpiry);
-
-        // Generate new secret key
-        $('#generate-secret-key').on('click', generateSecretKey);
+        // Real-time validation for JWT settings fields
+        $('input[name="jwt_auth_pro_settings[secret_key]"]').on('blur', validateSecretKey);
+        $('input[name="jwt_auth_pro_settings[access_token_expiry]"]').on('blur', validateTokenExpiry);
+        $('input[name="jwt_auth_pro_settings[refresh_token_expiry]"]').on('blur', validateTokenExpiry);
 
         // Generate JWT secret button
         $('#generate_jwt_secret').on('click', generateJWTSecret);
@@ -37,14 +35,8 @@ jQuery(document).ready(function($) {
         // Toggle show/hide JWT secret
         $('#toggle_jwt_secret').on('click', toggleJWTSecret);
 
-        // Test JWT generation
-        $('#test-jwt-generation').on('click', testJWTGeneration);
-
         // Copy to clipboard functionality
         $('.copy-to-clipboard').on('click', copyToClipboard);
-
-        // Toggle advanced settings
-        $('#toggle-advanced-settings').on('click', toggleAdvancedSettings);
     }
 
     /**
@@ -76,7 +68,11 @@ jQuery(document).ready(function($) {
      * Validate secret key
      */
     function validateSecretKey() {
-        const $input = $('input[name="wp_rest_auth_jwt_settings[secret_key]"]');
+        const $input = $('input[name="jwt_auth_pro_settings[secret_key]"]');
+        if (!$input.length || $input.prop('readonly')) {
+            return true; // Field doesn't exist or is readonly (defined in wp-config.php)
+        }
+
         const value = $input.val().trim();
 
         if (!value) {
@@ -97,25 +93,45 @@ jQuery(document).ready(function($) {
      * Validate token expiry
      */
     function validateTokenExpiry() {
-        const $input = $('input[name="wp_rest_auth_jwt_settings[token_expiry]"]');
-        const value = parseInt($input.val());
+        // Check both access token and refresh token fields
+        const $accessInput = $('input[name="jwt_auth_pro_settings[access_token_expiry]"]');
+        const $refreshInput = $('input[name="jwt_auth_pro_settings[refresh_token_expiry]"]');
 
-        if (isNaN(value) || value < 300) {
-            showFieldError($input, 'Token expiry must be at least 300 seconds (5 minutes)');
-            return false;
+        let isValid = true;
+
+        // Validate access token expiry
+        if ($accessInput.length && !$accessInput.prop('readonly')) {
+            const value = parseInt($accessInput.val());
+            if (isNaN(value) || value < 300) {
+                showFieldError($accessInput, 'Access token expiry must be at least 300 seconds');
+                isValid = false;
+            } else if (value > 86400) {
+                showFieldError($accessInput, 'Access token expiry should not exceed 86400 seconds');
+                isValid = false;
+            } else {
+                clearFieldError($accessInput);
+            }
         }
 
-        if (value > 86400) {
-            showFieldError($input, 'Token expiry should not exceed 86400 seconds (24 hours) for security');
-            return false;
+        // Validate refresh token expiry
+        if ($refreshInput.length && !$refreshInput.prop('readonly')) {
+            const value = parseInt($refreshInput.val());
+            if (isNaN(value) || value < 3600) {
+                showFieldError($refreshInput, 'Refresh token expiry must be at least 3600 seconds');
+                isValid = false;
+            } else if (value > 31536000) {
+                showFieldError($refreshInput, 'Refresh token expiry should not exceed 31536000 seconds');
+                isValid = false;
+            } else {
+                clearFieldError($refreshInput);
+            }
         }
 
-        clearFieldError($input);
-        return true;
+        return isValid;
     }
 
     /**
-     * Generate new secret key
+     * Generate new secret key (legacy function, kept for compatibility)
      */
     function generateSecretKey(e) {
         e.preventDefault();
@@ -125,7 +141,7 @@ jQuery(document).ready(function($) {
         }
 
         const secretKey = generateRandomString(64);
-        $('input[name="wp_rest_auth_jwt_settings[secret_key]"]').val(secretKey);
+        $('input[name="jwt_auth_pro_settings[secret_key]"]').val(secretKey);
         showNotice('New secret key generated. Remember to save your settings.', 'info');
     }
 

@@ -20,8 +20,21 @@
  * @link      https://github.com/juanma-wp/jwt-auth-pro-wp-rest-api
  */
 
-// Load Composer autoloader
-require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+// Load Composer autoloaders - need both dev and production
+// First load dev dependencies (PHPUnit, etc.)
+if ( file_exists( dirname( __DIR__ ) . '/vendor-dev/autoload.php' ) ) {
+	// In wp-env, dev dependencies are mapped to vendor-dev
+	require_once dirname( __DIR__ ) . '/vendor-dev/autoload.php';
+} elseif ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
+	// Local/CI testing with root vendor
+	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+}
+
+// Then load plugin dependencies (wp-rest-auth/auth-toolkit)
+if ( file_exists( dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php' ) ) {
+	// Always load plugin vendor if it exists
+	require_once dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php';
+}
 
 // Define minimal constants needed for helpers.php
 if ( ! defined( 'ABSPATH' ) ) {
@@ -48,7 +61,7 @@ if ( ! function_exists( 'wp_json_encode' ) ) {
 }
 
 // Load only the helpers.php file for basic function testing
-require_once dirname( __DIR__ ) . '/includes/helpers.php';
+require_once dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/includes/helpers.php';
 
 echo "JWT Auth Pro WP REST API Unit Test environment loaded successfully!\n";
 echo 'PHP version: ' . PHP_VERSION . "\n\n";
