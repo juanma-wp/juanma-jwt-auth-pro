@@ -44,4 +44,4 @@ parameters:
 	checkFunctionNameCase: false
 	# Keep WordPress extension but use minimal config to save memory
 includes:
-	- plugin/juanma-jwt-auth-pro/vendor/szepeviktor/phpstan-wordpress/extension.neon
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
