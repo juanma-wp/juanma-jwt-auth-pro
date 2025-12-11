@@ -50,4 +50,4 @@ jobs:
         run: find plugin/juanma-jwt-auth-pro -name "*.php" -not -path "*/vendor/*" -exec php -l {} \;
 
       - name: Run unit tests (PHP compatibility)
-        run: vendor/bin/phpunit --bootstrap tests/bootstrap-unit.php --testsuite=unit --testdox
+        run: vendor/bin/phpunit -c phpunit-unit.xml --testdox
