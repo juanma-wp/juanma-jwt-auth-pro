@@ -55,7 +55,6 @@ rsync -av --delete \
   --exclude='*.map' \
   --exclude='*.log' \
   --exclude='languages/README.md' \
-  --exclude='composer.json' \
   --exclude='composer.lock' \
   "$PLUGIN_DIR/" "$SVN_DIR/trunk/"
 
