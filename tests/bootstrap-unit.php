@@ -20,15 +20,19 @@
  * @link      https://github.com/juanma-wp/jwt-auth-pro-wp-rest-api
  */
 
-// Load Composer autoloaders - different paths for wp-env vs local
+// Load Composer autoloaders - need both dev and production
+// First load dev dependencies (PHPUnit, etc.)
 if ( file_exists( dirname( __DIR__ ) . '/vendor-dev/autoload.php' ) ) {
 	// In wp-env, dev dependencies are mapped to vendor-dev
 	require_once dirname( __DIR__ ) . '/vendor-dev/autoload.php';
 } elseif ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
-	// Local testing with root vendor
+	// Local/CI testing with root vendor
 	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
-} elseif ( file_exists( dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php' ) ) {
-	// Local testing with plugin vendor only
+}
+
+// Then load plugin dependencies (wp-rest-auth/auth-toolkit)
+if ( file_exists( dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php' ) ) {
+	// Always load plugin vendor if it exists
 	require_once dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/vendor/autoload.php';
 }
 
