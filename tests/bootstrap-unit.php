@@ -61,13 +61,7 @@ if ( ! function_exists( 'wp_json_encode' ) ) {
 }
 
 // Load only the helpers.php file for basic function testing
-if ( file_exists( dirname( __DIR__ ) . '/includes/helpers.php' ) ) {
-	// In wp-env, mounted directly
-	require_once dirname( __DIR__ ) . '/includes/helpers.php';
-} else {
-	// Local testing outside wp-env
-	require_once dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/includes/helpers.php';
-}
+require_once dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/includes/helpers.php';
 
 echo "JWT Auth Pro WP REST API Unit Test environment loaded successfully!\n";
 echo 'PHP version: ' . PHP_VERSION . "\n\n";
