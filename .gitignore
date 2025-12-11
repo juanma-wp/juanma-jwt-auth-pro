@@ -41,3 +41,9 @@ CLAUDE.local.md
 .phpunit.result.cache
 
 build/
+
+plugin/juanma-jwt-auth-pro/vendor/
+plugin/juanma-jwt-auth-pro/vendor-dev/
+plugin/juanma-jwt-auth-pro/composer.lock
+plugin/juanma-jwt-auth-pro/phpunit.xml
+plugin/juanma-jwt-auth-pro/tests/
