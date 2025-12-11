@@ -210,7 +210,7 @@ class JuanMa_JWT_Auth_Pro_Admin_Settings extends BaseAdminSettings {
 		wp_enqueue_script(
 			'juanma-jwt-auth-pro-admin',
 			plugin_dir_url( __DIR__ ) . 'assets/admin.js',
-			array( 'jquery' ),
+			array( 'jquery', 'jquery-ui-tooltip' ),
 			JMJAP_VERSION,
 			true
 		);
