@@ -77,14 +77,14 @@ echo -e "\n${GREEN}Step 4: Processing SVN changes...${NC}"
 # Add new files
 NEW_FILES=$(svn status | grep '^?' | awk '{print $2}')
 if [ ! -z "$NEW_FILES" ]; then
-    echo "$NEW_FILES" | xargs -r svn add
+    echo "$NEW_FILES" | xargs svn add
     echo "Added new files to SVN"
 fi
 
 # Remove deleted files
 DELETED_FILES=$(svn status | grep '^!' | awk '{print $2}')
 if [ ! -z "$DELETED_FILES" ]; then
-    echo "$DELETED_FILES" | xargs -r svn delete
+    echo "$DELETED_FILES" | xargs svn delete
     echo "Removed deleted files from SVN"
 fi
 
