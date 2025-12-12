@@ -20,12 +20,12 @@ Unlike basic JWT plugins that use **single long-lived tokens**, Juanma JWT Auth 
 
 | Feature | Basic JWT Plugins | Juanma JWT Auth Pro |
 |---------|-------------------|---------------------|
-| **Token Lifetime** | Long (hours/days) ❌ | Short (1 hour) ✅ |
-| **Refresh Tokens** | None ❌ | Secure HTTP-only ✅ |
-| **XSS Protection** | Limited ❌ | HTTP-only cookies ✅ |
-| **Token Revocation** | Manual only ❌ | Automatic rotation ✅ |
-| **Session Management** | None ❌ | Database tracking ✅ |
-| **Security Metadata** | None ❌ | IP + User Agent ✅ |
+| **Token Lifetime** | Long (hours/days) | Short (1 hour) |
+| **Refresh Tokens** | None | Secure HTTP-only |
+| **XSS Protection** | Limited | HTTP-only cookies |
+| **Token Revocation** | Manual only | Automatic rotation |
+| **Session Management** | None | Database tracking |
+| **Security Metadata** | None | IP + User Agent |
 
 ### 🔒 **The Problem with Basic JWT Plugins:**
 - **Long-lived tokens** (24h+) = Higher security risk
