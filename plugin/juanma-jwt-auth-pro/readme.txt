@@ -40,14 +40,7 @@ Unlike basic JWT plugins that use **single long-lived tokens**, JWT Auth Pro imp
 
 = Security Comparison =
 
-| Feature | Basic JWT Plugins | JWT Auth Pro |
-|---------|-------------------|--------------|
-| Token Lifetime | Long (hours/days) | Short (1 hour) |
-| Refresh Tokens | None | Secure HTTP-only |
-| XSS Protection | Limited | HTTP-only cookies |
-| Token Revocation | Manual only | Automatic rotation |
-| Session Management | None | Database tracking |
-| Security Metadata | None | IP + User Agent |
+![Security Comparison](https://raw.githubusercontent.com/juanma-wp/juanma-jwt-auth-pro/main/assets/docs/security-comparison.png)
 
 = Perfect for: =
 
