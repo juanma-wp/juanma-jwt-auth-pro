@@ -1,5 +1,11 @@
 # CORS & Cookies
 
+> **Cookie Documentation Navigation**
+>
+> - **This Document**: Quick reference for cross-origin cookie configuration
+> - **API Reference**: [cookie-configuration.md](./cookie-configuration.md) - Complete technical reference
+> - **Tutorial Guide**: [cookie-configuration-guide.md](./cookie-configuration-guide.md) - Step-by-step learning guide
+
 Guidance for SPAs/mobile apps using JWT Auth Pro across origins.
 
 ## Client (fetch)

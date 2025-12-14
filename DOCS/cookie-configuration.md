@@ -1,5 +1,11 @@
 # Cookie Configuration
 
+> **Cookie Documentation Navigation**
+>
+> - **This Document**: Complete API reference for cookie configuration (constants, filters, methods)
+> - **Tutorial Guide**: [cookie-configuration-guide.md](./cookie-configuration-guide.md) - Step-by-step learning guide
+> - **Cross-Origin Setup**: [cors-and-cookies.md](./cors-and-cookies.md) - CORS configuration for SPAs
+
 JWT Auth Pro provides a flexible, environment-aware cookie configuration system that can be controlled through multiple layers:
 
 1. **Constants** (highest priority)
@@ -402,3 +408,15 @@ $config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config(); // Fresh configuratio
 - [Security Best Practices](../README.md#-security)
 - [WordPress Environment Types](https://make.wordpress.org/core/2020/07/24/new-wp_get_environment_type-function-in-wordpress-5-5/)
 - [SameSite Cookies Explained](https://web.dev/samesite-cookies-explained/)
+
+---
+
+**Documentation Metadata**
+
+- **Last Updated**: 2025-12-14
+- **Plugin Version**: 1.2.x
+- **Compatibility**: WordPress 5.6+
+- **Status**: Current
+- **Review Date**: Every major release
+
+Found an issue with this documentation? [Report it](https://github.com/juanma-wp/wp-rest-auth-jwt/issues/new?labels=documentation)

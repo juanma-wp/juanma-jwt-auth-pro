@@ -321,3 +321,15 @@ JWT Auth Pro provides **full RFC 7009 compliance**, implementing enterprise-grad
 - **Future-proof** architecture following IETF standards
 
 By implementing RFC 7009, JWT Auth Pro delivers the **most secure JWT authentication solution** for WordPress, suitable for high-security environments including banking, healthcare, and government applications.
+
+---
+
+**Documentation Metadata**
+
+- **Last Updated**: 2025-12-14
+- **Plugin Version**: 1.2.x
+- **Compatibility**: WordPress 5.6+
+- **Status**: Current
+- **Review Date**: Every major release
+
+Found an issue with this documentation? [Report it](https://github.com/juanma-wp/wp-rest-auth-jwt/issues/new?labels=documentation)
