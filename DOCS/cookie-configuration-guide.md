@@ -1,5 +1,11 @@
 # Cookie Configuration Guide
 
+> **Cookie Documentation Navigation**
+>
+> - **This Document**: Step-by-step tutorial for understanding cookie configuration
+> - **API Reference**: [cookie-configuration.md](./cookie-configuration.md) - Complete technical reference
+> - **Cross-Origin Setup**: [cors-and-cookies.md](./cors-and-cookies.md) - CORS configuration for SPAs
+
 Complete guide to understanding and configuring JWT refresh token cookies in JWT Auth Pro.
 
 ## Table of Contents

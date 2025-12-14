@@ -175,9 +175,9 @@ public function revoke_refresh_token( string $refresh_token ): bool {
 
 // Logout endpoint triggers automatic revocation - class-auth-jwt.php:281-294
 public function logout( WP_REST_Request $request ): WP_REST_Response {
-    wp_auth_jwt_maybe_add_cors_headers();
+    // CORS is handled automatically by WPRestAuth\AuthToolkit\Http\Cors class
 
-    $refresh_token = isset( $_COOKIE[ self::REFRESH_COOKIE_NAME ] ) ? 
+    $refresh_token = isset( $_COOKIE[ self::REFRESH_COOKIE_NAME ] ) ?
         sanitize_text_field( wp_unslash( $_COOKIE[ self::REFRESH_COOKIE_NAME ] ) ) : '';
 
     if ( ! empty( $refresh_token ) ) {
@@ -566,3 +566,15 @@ JWT Auth Pro is the **only WordPress JWT plugin** that implements RFC 9700's com
 - 🔒 **Enterprise & Fortune 500**
 
 **The most secure JWT authentication solution for WordPress - RFC 9700 certified.** 🛡️
+
+---
+
+**Documentation Metadata**
+
+- **Last Updated**: 2025-12-14
+- **Plugin Version**: 1.2.x
+- **Compatibility**: WordPress 5.6+
+- **Status**: Current
+- **Review Date**: Every major release
+
+Found an issue with this documentation? [Report it](https://github.com/juanma-wp/wp-rest-auth-jwt/issues/new?labels=documentation)
