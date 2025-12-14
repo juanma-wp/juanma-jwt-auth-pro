@@ -25,12 +25,12 @@ if ( apply_filters( 'juanma_jwt_auth_pro_rotate_refresh_token', true ) ) {
     // Update refresh token with rotation
     $this->update_refresh_token( $token_data['id'], $new_refresh_token, $refresh_expires );
 
-    // Set new refresh token cookie
+    // Set new refresh token cookie (path is auto-detected)
     wp_auth_jwt_set_cookie(
         self::REFRESH_COOKIE_NAME,
         $new_refresh_token,
         $refresh_expires,
-        self::COOKIE_PATH,
+        null, // Path (auto-detected based on environment)
         true, // HTTPOnly
         true  // Secure
     );
@@ -184,8 +184,8 @@ public function logout( WP_REST_Request $request ): WP_REST_Response {
         $this->revoke_refresh_token( $refresh_token );  // ← Security event revocation
     }
 
-    // Delete refresh token cookie
-    wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME, self::COOKIE_PATH );
+    // Delete refresh token cookie (path is auto-detected)
+    wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME );
 
     return wp_auth_jwt_success_response( array(), 'Logout successful' );
 }

@@ -45,8 +45,8 @@ public function logout( WP_REST_Request $request ): WP_REST_Response {
         $this->revoke_refresh_token( $refresh_token );  // ← Immediate revocation
     }
 
-    // Delete refresh token cookie
-    wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME, self::COOKIE_PATH );
+    // Delete refresh token cookie (path is auto-detected)
+    wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME );
     
     return wp_auth_jwt_success_response( array(), 'Logout successful' );
 }

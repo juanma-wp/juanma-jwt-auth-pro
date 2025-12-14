@@ -346,12 +346,12 @@ define('JWT_AUTH_COOKIE_LIFETIME', 7 * DAY_IN_SECONDS);
 
 ## API Reference
 
-### `JWT_Cookie_Config::get_config()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::get_config()`
 
 Get the current active configuration.
 
 ```php
-$config = JWT_Cookie_Config::get_config();
+$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
 
 // Returns:
 array(
@@ -368,32 +368,32 @@ array(
 )
 ```
 
-### `JWT_Cookie_Config::get_environment()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::get_environment()`
 
 Get the current detected environment.
 
 ```php
-$env = JWT_Cookie_Config::get_environment();
+$env = JuanMa_JWT_Auth_Pro_Cookie_Config::get_environment();
 // Returns: 'development', 'staging', or 'production'
 ```
 
-### `JWT_Cookie_Config::is_development()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::is_development()`
 
 Check if current environment is development.
 
 ```php
-if (JWT_Cookie_Config::is_development()) {
+if (JuanMa_JWT_Auth_Pro_Cookie_Config::is_development()) {
     // Development-specific code
 }
 ```
 
-### `JWT_Cookie_Config::clear_cache()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache()`
 
 Clear the configuration cache (automatically called when settings are saved).
 
 ```php
-JWT_Cookie_Config::clear_cache();
-$config = JWT_Cookie_Config::get_config(); // Fresh configuration
+JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config(); // Fresh configuration
 ```
 
 ## Further Reading
