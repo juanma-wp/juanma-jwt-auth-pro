@@ -84,7 +84,7 @@ CREATE TABLE wp_jwt_refresh_tokens (
 public function revoke_refresh_token( string $refresh_token ): bool {
     global $wpdb;
     
-    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JWT_AUTH_PRO_SECRET );
+    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JMJAP_SECRET );
     
     // Clear cache first for immediate effect
     $cache_key = 'jwt_token_' . md5( $token_hash );
@@ -284,7 +284,7 @@ const logout = async () => {
 
 ```php
 // Revoke specific user session
-$auth_jwt = new Auth_JWT();
+$auth_jwt = new JuanMa_JWT_Auth_Pro();
 $tokens = $auth_jwt->get_user_refresh_tokens( $user_id );
 
 foreach ( $tokens as $token ) {

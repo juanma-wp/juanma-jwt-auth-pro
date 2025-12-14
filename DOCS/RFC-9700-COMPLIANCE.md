@@ -18,9 +18,9 @@ JWT Auth Pro implements the **IETF RFC 9700 (Best Current Practice for OAuth 2.0
 
 ```php
 // Automatic refresh token rotation - class-auth-jwt.php:247-263
-if ( apply_filters( 'wp_auth_jwt_rotate_refresh_token', true ) ) {
+if ( apply_filters( 'juanma_jwt_auth_pro_rotate_refresh_token', true ) ) {
     $new_refresh_token = wp_auth_jwt_generate_token( 64 );
-    $refresh_expires   = $now + JWT_AUTH_REFRESH_TTL;
+    $refresh_expires   = $now + JMJAP_REFRESH_TTL;
 
     // Update refresh token with rotation
     $this->update_refresh_token( $token_data['id'], $new_refresh_token, $refresh_expires );
@@ -44,7 +44,7 @@ $result = $wpdb->insert(
     $wpdb->prefix . 'jwt_refresh_tokens',
     array(
         'user_id'    => $user_id,
-        'token_hash' => wp_auth_jwt_hash_token( $refresh_token, JWT_AUTH_PRO_SECRET ),
+        'token_hash' => wp_auth_jwt_hash_token( $refresh_token, JMJAP_SECRET ),
         'expires_at' => $expires_at,
         'issued_at'  => time(),
         'created_at' => time(),
@@ -75,7 +75,7 @@ public function generate_access_token( int $user_id, array $extra_claims = array
         'iss' => self::ISSUER,
         'sub' => (string) $user_id,
         'iat' => $now,
-        'exp' => $now + JWT_AUTH_ACCESS_TTL,  // ← 3600 seconds = 1 hour
+        'exp' => $now + JMJAP_ACCESS_TTL,  // ← 3600 seconds = 1 hour
         'jti' => wp_auth_jwt_generate_token( 16 ),  // ← Unique identifier
     );
     
@@ -83,15 +83,15 @@ public function generate_access_token( int $user_id, array $extra_claims = array
         $claims = array_merge( $claims, $extra_claims );  // ← Role-based claims
     }
     
-    return wp_auth_jwt_encode( $claims, JWT_AUTH_PRO_SECRET );
+    return wp_auth_jwt_encode( $claims, JMJAP_SECRET );
 }
 ```
 
 **Configuration**:
 ```php
 // Configurable short lifetimes - wp-config.php
-define('JWT_AUTH_ACCESS_TTL', 3600);      // 1 hour (vs 24h+ in basic plugins)
-define('JWT_AUTH_REFRESH_TTL', 2592000);  // 30 days
+define('JMJAP_ACCESS_TTL', 3600);      // 1 hour (vs 24h+ in basic plugins)
+define('JMJAP_REFRESH_TTL', 2592000);  // 30 days
 ```
 
 **Features**:
@@ -116,7 +116,7 @@ function wp_auth_jwt_set_cookie(
     ?bool $secure = null
 ): bool {
     $secure   = $secure ?? is_ssl();  // ← HTTPS enforcement
-    $samesite = apply_filters( 'wp_auth_jwt_cookie_samesite', 'Strict' );
+    $samesite = apply_filters( 'juanma_jwt_auth_pro_cookie_samesite', 'Strict' );
 
     if ( PHP_VERSION_ID >= 70300 ) {
         return setcookie(
@@ -154,7 +154,7 @@ function wp_auth_jwt_set_cookie(
 public function revoke_refresh_token( string $refresh_token ): bool {
     global $wpdb;
 
-    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JWT_AUTH_PRO_SECRET );
+    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JMJAP_SECRET );
 
     // Clear cache first for immediate effect
     $cache_key = 'jwt_token_' . md5( $token_hash );
@@ -244,7 +244,7 @@ function wp_auth_jwt_format_user_data( WP_User $user, bool $include_roles = fals
 private function validate_refresh_token( string $refresh_token ) {
     global $wpdb;
 
-    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JWT_AUTH_PRO_SECRET );
+    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JMJAP_SECRET );
     $now        = time();
 
     $cache_key  = 'jwt_token_' . md5( $token_hash );
@@ -461,7 +461,7 @@ class JWTSessionManager {
     private $auth_jwt;
 
     public function __construct() {
-        $this->auth_jwt = new Auth_JWT();
+        $this->auth_jwt = new JuanMa_JWT_Auth_Pro();
     }
 
     // Revoke all sessions for security incident
