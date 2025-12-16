@@ -1,5 +1,11 @@
 # Cookie Configuration Guide
 
+> **Cookie Documentation Navigation**
+>
+> - **This Document**: Step-by-step tutorial for understanding cookie configuration
+> - **API Reference**: [cookie-configuration.md](./cookie-configuration.md) - Complete technical reference
+> - **Cross-Origin Setup**: [cors-and-cookies.md](./cors-and-cookies.md) - CORS configuration for SPAs
+
 Complete guide to understanding and configuring JWT refresh token cookies in JWT Auth Pro.
 
 ## Table of Contents
@@ -272,7 +278,7 @@ After 30 days, browser automatically deletes the cookie.
 
 ### How Environments Are Detected
 
-The plugin uses `JWT_Cookie_Config::detect_environment()` to determine your environment:
+The plugin uses `JuanMa_JWT_Auth_Pro_Cookie_Config::get_environment()` to determine your environment:
 
 #### Development Indicators
 

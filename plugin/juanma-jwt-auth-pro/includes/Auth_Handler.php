@@ -23,11 +23,15 @@
  * @link      https://github.com/juanma-wp/wp-rest-auth-jwt
  */
 
+namespace JM_JWTAuthPro;
+
+use WPRestAuth\AuthToolkit\Http\Cookie;
+use WPRestAuth\AuthToolkit\Http\Cors;
+use WPRestAuth\AuthToolkit\Token\RefreshTokenManager;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-use WPRestAuth\AuthToolkit\Http\Cookie;
 
 /**
  * JWT Authentication Handler Class.
@@ -35,7 +39,7 @@ use WPRestAuth\AuthToolkit\Http\Cookie;
  * Handles all JWT token operations including authentication, token generation,
  * validation, and refresh token management.
  */
-class JuanMa_JWT_Auth_Pro {
+class Auth_Handler {
 
 	const ISSUER                 = 'wp-rest-auth-jwt';
 	const REFRESH_COOKIE_NAME    = 'wp_jwt_refresh_token';
@@ -44,7 +48,7 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Refresh token manager instance
 	 *
-	 * @var \WPRestAuth\AuthToolkit\Token\RefreshTokenManager
+	 * @var RefreshTokenManager
 	 */
 	private $refresh_token_manager;
 
@@ -72,7 +76,7 @@ class JuanMa_JWT_Auth_Pro {
 		}
 
 		// Initialize refresh token manager.
-		$this->refresh_token_manager = new \WPRestAuth\AuthToolkit\Token\RefreshTokenManager(
+		$this->refresh_token_manager = new RefreshTokenManager(
 			$wpdb->prefix . 'jwt_refresh_tokens',
 			$secret,
 			'jwt'
@@ -175,13 +179,13 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Issue a new access token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response|WP_Error Response or error.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response|\WP_Error Response or error.
 	 */
-	public function issue_token( WP_REST_Request $request ) {
+	public function issue_token( \WP_REST_Request $request ) {
 		// Handle CORS preflight using toolkit.
-		if ( \WPRestAuth\AuthToolkit\Http\Cors::isOptionsRequest() ) {
-			return \WPRestAuth\AuthToolkit\Http\Cors::handleOptionsRequest();
+		if ( Cors::isOptionsRequest() ) {
+			return Cors::handleOptionsRequest();
 		}
 
 		$username = $request->get_param( 'username' );
@@ -249,13 +253,13 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Refresh an access token using a refresh token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response|WP_Error Response or error.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response|\WP_Error Response or error.
 	 */
-	public function refresh_access_token( WP_REST_Request $request ) {
+	public function refresh_access_token( \WP_REST_Request $request ) {
 		// Handle CORS preflight using toolkit.
-		if ( \WPRestAuth\AuthToolkit\Http\Cors::isOptionsRequest() ) {
-			return \WPRestAuth\AuthToolkit\Http\Cors::handleOptionsRequest();
+		if ( Cors::isOptionsRequest() ) {
+			return Cors::handleOptionsRequest();
 		}
 
 		// Use Cookie::get() which handles both $_COOKIE and HTTP_COOKIE header fallback.
@@ -321,13 +325,13 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Logout and revoke refresh token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response Success response.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response Success response.
 	 */
-	public function logout( WP_REST_Request $request ): WP_REST_Response {
+	public function logout( \WP_REST_Request $request ): \WP_REST_Response {
 		// Handle CORS preflight using toolkit.
-		if ( \WPRestAuth\AuthToolkit\Http\Cors::isOptionsRequest() ) {
-			return \WPRestAuth\AuthToolkit\Http\Cors::handleOptionsRequest();
+		if ( Cors::isOptionsRequest() ) {
+			return Cors::handleOptionsRequest();
 		}
 
 		// Use Cookie::get() which handles both $_COOKIE and HTTP_COOKIE header fallback.
@@ -346,10 +350,10 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Verify a JWT token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response|WP_Error Response or error.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response|\WP_Error Response or error.
 	 */
-	public function verify_token( WP_REST_Request $request ) {
+	public function verify_token( \WP_REST_Request $request ) {
 
 		// Support bearer header directly on verify.
 		$auth_header = $request->get_header( 'Authorization' );
@@ -384,7 +388,7 @@ class JuanMa_JWT_Auth_Pro {
 	 * Authenticate using a bearer token.
 	 *
 	 * @param string $token The JWT token.
-	 * @return WP_User|WP_Error User object or error.
+	 * @return \WP_User|\WP_Error User object or error.
 	 */
 	public function authenticate_bearer( string $token ) {
 		// Get secret lazily - check constant first, then admin settings.
@@ -395,7 +399,7 @@ class JuanMa_JWT_Auth_Pro {
 		}
 
 		if ( empty( $secret ) ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'jwt_secret_missing',
 				'JWT secret not configured',
 				array( 'status' => 500 )
@@ -405,7 +409,7 @@ class JuanMa_JWT_Auth_Pro {
 		$payload = wp_auth_jwt_decode( $token, $secret );
 
 		if ( ! $payload ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'invalid_token',
 				'Invalid or expired JWT token',
 				array( 'status' => 401 )
@@ -414,7 +418,7 @@ class JuanMa_JWT_Auth_Pro {
 
 		$user_id = intval( $payload['sub'] ?? 0 );
 		if ( ! $user_id ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'invalid_token_subject',
 				'Invalid token subject',
 				array( 'status' => 401 )
@@ -423,7 +427,7 @@ class JuanMa_JWT_Auth_Pro {
 
 		$user = get_user_by( 'id', $user_id );
 		if ( ! $user ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'invalid_token_user',
 				'User not found',
 				array( 'status' => 401 )
@@ -463,7 +467,7 @@ class JuanMa_JWT_Auth_Pro {
 	 * Validate refresh token.
 	 *
 	 * @param string $refresh_token The refresh token to validate.
-	 * @return array|WP_Error Token data or error if invalid.
+	 * @return array|\WP_Error Token data or error if invalid.
 	 */
 	private function validate_refresh_token( string $refresh_token ) {
 		if ( ! $this->refresh_token_manager ) {
@@ -566,10 +570,10 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Check if user is authenticated.
 	 *
-	 * @param WP_REST_Request|null $request Optional request object.
+	 * @param \WP_REST_Request|null $request Optional request object.
 	 * @return bool True if authenticated, false otherwise.
 	 */
-	public function whoami( ?WP_REST_Request $request = null ): bool {
+	public function whoami( ?\WP_REST_Request $request = null ): bool {
 		$user = wp_get_current_user();
 		if ( ! $user->exists() ) {
 			return false;

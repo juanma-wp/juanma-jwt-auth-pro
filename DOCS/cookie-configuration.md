@@ -1,5 +1,11 @@
 # Cookie Configuration
 
+> **Cookie Documentation Navigation**
+>
+> - **This Document**: Complete API reference for cookie configuration (constants, filters, methods)
+> - **Tutorial Guide**: [cookie-configuration-guide.md](./cookie-configuration-guide.md) - Step-by-step learning guide
+> - **Cross-Origin Setup**: [cors-and-cookies.md](./cors-and-cookies.md) - CORS configuration for SPAs
+
 JWT Auth Pro provides a flexible, environment-aware cookie configuration system that can be controlled through multiple layers:
 
 1. **Constants** (highest priority)
@@ -346,12 +352,12 @@ define('JWT_AUTH_COOKIE_LIFETIME', 7 * DAY_IN_SECONDS);
 
 ## API Reference
 
-### `JWT_Cookie_Config::get_config()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::get_config()`
 
 Get the current active configuration.
 
 ```php
-$config = JWT_Cookie_Config::get_config();
+$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
 
 // Returns:
 array(
@@ -368,32 +374,32 @@ array(
 )
 ```
 
-### `JWT_Cookie_Config::get_environment()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::get_environment()`
 
 Get the current detected environment.
 
 ```php
-$env = JWT_Cookie_Config::get_environment();
+$env = JuanMa_JWT_Auth_Pro_Cookie_Config::get_environment();
 // Returns: 'development', 'staging', or 'production'
 ```
 
-### `JWT_Cookie_Config::is_development()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::is_development()`
 
 Check if current environment is development.
 
 ```php
-if (JWT_Cookie_Config::is_development()) {
+if (JuanMa_JWT_Auth_Pro_Cookie_Config::is_development()) {
     // Development-specific code
 }
 ```
 
-### `JWT_Cookie_Config::clear_cache()`
+### `JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache()`
 
 Clear the configuration cache (automatically called when settings are saved).
 
 ```php
-JWT_Cookie_Config::clear_cache();
-$config = JWT_Cookie_Config::get_config(); // Fresh configuration
+JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config(); // Fresh configuration
 ```
 
 ## Further Reading
@@ -402,3 +408,15 @@ $config = JWT_Cookie_Config::get_config(); // Fresh configuration
 - [Security Best Practices](../README.md#-security)
 - [WordPress Environment Types](https://make.wordpress.org/core/2020/07/24/new-wp_get_environment_type-function-in-wordpress-5-5/)
 - [SameSite Cookies Explained](https://web.dev/samesite-cookies-explained/)
+
+---
+
+**Documentation Metadata**
+
+- **Last Updated**: 2025-12-14
+- **Plugin Version**: 1.2.x
+- **Compatibility**: WordPress 5.6+
+- **Status**: Current
+- **Review Date**: Every major release
+
+Found an issue with this documentation? [Report it](https://github.com/juanma-wp/wp-rest-auth-jwt/issues/new?labels=documentation)

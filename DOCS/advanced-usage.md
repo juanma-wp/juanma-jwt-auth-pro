@@ -78,4 +78,16 @@ await auth.login('username', 'password');
 const posts = await auth.apiCall('/wp-json/wp/v2/posts');
 ```
 
+---
+
+**Documentation Metadata**
+
+- **Last Updated**: 2025-12-14
+- **Plugin Version**: 1.2.x
+- **Compatibility**: WordPress 5.6+
+- **Status**: Current
+- **Review Date**: Every major release
+
+Found an issue with this documentation? [Report it](https://github.com/juanma-wp/wp-rest-auth-jwt/issues/new?labels=documentation)
+
 

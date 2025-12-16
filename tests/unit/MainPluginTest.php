@@ -3,7 +3,7 @@
 /**
  * Main Plugin Unit Tests
  *
- * Unit tests for the main JuanMa_JWT_Auth_Pro_Plugin plugin class.
+ * Unit tests for the main Plugin plugin class.
  * Tests plugin initialization, constants, dependency loading,
  * and core functionality.
  *
@@ -17,6 +17,11 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use JM_JWTAuthPro\Plugin;
+use JM_JWTAuthPro\Auth_Handler;
+use JM_JWTAuthPro\Cookie_Config;
+use JM_JWTAuthPro\OpenAPI_Spec;
+use JM_JWTAuthPro\Admin_Settings;
 
 /**
  * Unit tests for main JWT plugin class.
@@ -27,7 +32,7 @@ class MainPluginTest extends TestCase
 	/**
 	 * Plugin instance for testing.
 	 *
-	 * @var JuanMa_JWT_Auth_Pro_Plugin
+	 * @var Plugin
 	 */
 	private $plugin;
 
@@ -38,8 +43,14 @@ class MainPluginTest extends TestCase
 	{
 		parent::setUp();
 
-		// Load the main plugin class - different path depending on context
-		if (! class_exists('JuanMa_JWT_Auth_Pro_Plugin')) {
+		// Verify plugin classes autoloaded.
+		if (! class_exists('JM_JWTAuthPro\Auth_Handler')) {
+			throw new \Exception('Plugin classes not autoloaded.');
+		}
+
+		// Load the main plugin file if the plugin class isn't available yet.
+		// Note: Plugin is in global namespace (main file).
+		if (! class_exists('JM_JWTAuthPro\Plugin')) {
 			// In wp-env, files are mounted directly
 			if (file_exists(dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php')) {
 				require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
@@ -57,7 +68,7 @@ class MainPluginTest extends TestCase
 			define('JMJAP_PLUGIN_DIR', dirname(__DIR__, 2) . '/');
 		}
 
-		$this->plugin = new JuanMa_JWT_Auth_Pro_Plugin();
+		$this->plugin = new Plugin();
 	}
 
 	/**
@@ -65,8 +76,8 @@ class MainPluginTest extends TestCase
 	 */
 	public function testPluginClassExists(): void
 	{
-		$this->assertTrue(class_exists('JuanMa_JWT_Auth_Pro_Plugin'));
-		$this->assertInstanceOf('JuanMa_JWT_Auth_Pro_Plugin', $this->plugin);
+		$this->assertTrue(class_exists('JM_JWTAuthPro\Plugin'));
+		$this->assertInstanceOf(Plugin::class, $this->plugin);
 	}
 
 	/**
@@ -98,8 +109,11 @@ class MainPluginTest extends TestCase
 	 */
 	public function testDependencyLoading(): void
 	{
-		// Test that load_dependencies method exists.
-		$this->assertTrue(method_exists($this->plugin, 'load_dependencies'));
+		// Dependencies are now loaded via Composer autoloader.
+		// Test that required classes are available.
+		$this->assertTrue(class_exists(Auth_Handler::class));
+		$this->assertTrue(class_exists(Cookie_Config::class));
+		$this->assertTrue(class_exists(Admin_Settings::class));
 	}
 
 	/**
@@ -292,7 +306,7 @@ class MainPluginTest extends TestCase
 			$property = $reflection->getProperty('auth_jwt');
 			$property->setAccessible(true);
 			$auth_jwt = $property->getValue($this->plugin);
-			$this->assertInstanceOf('JuanMa_JWT_Auth_Pro', $auth_jwt);
+			$this->assertInstanceOf(Auth_Handler::class, $auth_jwt);
 		}
 
 		// Check for admin_settings property (only in admin).
@@ -301,7 +315,7 @@ class MainPluginTest extends TestCase
 			$property->setAccessible(true);
 			$admin_settings = $property->getValue($this->plugin);
 			// May be null if not in admin context.
-			$this->assertTrue(null === $admin_settings || $admin_settings instanceof JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Admin_Settings);
+			$this->assertTrue(null === $admin_settings || $admin_settings instanceof JM_JWTAuthPro\Admin_Settings);
 		}
 	}
 
@@ -337,7 +351,7 @@ class MainPluginTest extends TestCase
 	{
 		// The plugin should be instantiated as a singleton through the main file.
 		// We can't test this directly in unit tests, but we can verify the structure.
-		$this->assertInstanceOf('JuanMa_JWT_Auth_Pro_Plugin', $this->plugin);
+		$this->assertInstanceOf(Plugin::class, $this->plugin);
 	}
 
 	/**

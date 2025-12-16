@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use JM_JWTAuthPro\Auth_Handler;
 
 /**
  * Unit tests for JWT Authentication class
@@ -10,7 +11,7 @@ class JWTAuthTest extends TestCase {
 	/**
 	 * Auth JWT instance for testing.
 	 *
-	 * @var JuanMa_JWT_Auth_Pro
+	 * @var Auth_Handler
 	 */
 	private $auth_jwt;
 
@@ -20,14 +21,9 @@ class JWTAuthTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		// Load the JWT auth class
-		if ( ! class_exists( 'JuanMa_JWT_Auth_Pro' ) ) {
-			require_once dirname( __DIR__, 2 ) . '/includes/class-auth-jwt.php';
-		}
-
-		// Load helpers
-		if ( ! function_exists( 'wp_auth_jwt_generate_token' ) ) {
-			require_once dirname( __DIR__, 2 ) . '/includes/helpers.php';
+		// Verify autoloading works correctly.
+		if ( ! class_exists( Auth_Handler::class ) ) {
+			throw new \Exception( 'Auth_Handler not autoloaded. Check composer dump-autoload.' );
 		}
 
 		// Define constants for testing
@@ -41,15 +37,15 @@ class JWTAuthTest extends TestCase {
 			define( 'JMJAP_REFRESH_TTL', 86400 );
 		}
 
-		$this->auth_jwt = new JuanMa_JWT_Auth_Pro();
+		$this->auth_jwt = new Auth_Handler();
 	}
 
 	/**
 	 * Test JWT auth class exists and can be instantiated.
 	 */
 	public function testJWTAuthClassExists(): void {
-		$this->assertTrue( class_exists( 'JuanMa_JWT_Auth_Pro' ) );
-		$this->assertInstanceOf( 'JuanMa_JWT_Auth_Pro', $this->auth_jwt );
+		$this->assertTrue( class_exists( Auth_Handler::class ) );
+		$this->assertInstanceOf( Auth_Handler::class, $this->auth_jwt );
 	}
 
 	/**
@@ -155,7 +151,7 @@ class JWTAuthTest extends TestCase {
 		$this->assertTrue( function_exists( 'wp_auth_jwt_maybe_add_cors_headers' ) );
 
 		// Verify Cors class exists in toolkit
-		$this->assertTrue( class_exists( '\WPRestAuth\AuthToolkit\Http\Cors' ) );
+		$this->assertTrue( class_exists( 'WPRestAuth\AuthToolkit\Http\Cors' ) );
 	}
 
 	/**
@@ -177,12 +173,10 @@ class JWTAuthTest extends TestCase {
 	 * Test class constants are properly defined.
 	 */
 	public function testClassConstants(): void {
-		// Test class constants
-		$this->assertTrue( defined( 'JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME' ) );
-		$this->assertSame( 'wp_jwt_refresh_token', JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME );
-
-		$this->assertTrue( defined( 'JuanMa_JWT_Auth_Pro::ISSUER' ) );
-		$this->assertSame( 'wp-rest-auth-jwt', JuanMa_JWT_Auth_Pro::ISSUER );
+		// Test class constants - they are accessible if the class exists
+		$this->assertTrue( class_exists( Auth_Handler::class ) );
+		$this->assertSame( 'wp_jwt_refresh_token', Auth_Handler::REFRESH_COOKIE_NAME );
+		$this->assertSame( 'wp-rest-auth-jwt', Auth_Handler::ISSUER );
 	}
 
 	/**
@@ -203,7 +197,7 @@ class JWTAuthTest extends TestCase {
 		// Test a basic JWT workflow using helper functions
 		$secret = JMJAP_SECRET;
 		$claims = array(
-			'iss' => JuanMa_JWT_Auth_Pro::ISSUER,
+			'iss' => Auth_Handler::ISSUER,
 			'aud' => 'test-audience',
 			'iat' => time(),
 			'exp' => time() + 3600,
@@ -217,7 +211,7 @@ class JWTAuthTest extends TestCase {
 		$decoded = wp_auth_jwt_decode( $token, $secret );
 		$this->assertIsArray( $decoded );
 		$this->assertSame( 123, $decoded['sub'] );
-		$this->assertSame( JuanMa_JWT_Auth_Pro::ISSUER, $decoded['iss'] );
+		$this->assertSame( Auth_Handler::ISSUER, $decoded['iss'] );
 	}
 
 	/**
@@ -279,7 +273,7 @@ class JWTAuthTest extends TestCase {
 	public function testTokenExpiration(): void {
 		// Create expired token
 		$expired_payload = array(
-			'iss' => JuanMa_JWT_Auth_Pro::ISSUER,
+			'iss' => Auth_Handler::ISSUER,
 			'exp' => time() - 3600, // Expired 1 hour ago
 			'iat' => time() - 3600,
 			'sub' => 123,
@@ -303,7 +297,7 @@ class JWTAuthTest extends TestCase {
 	 */
 	private function createValidJWTToken( $user_id = 123 ): string {
 		$payload = array(
-			'iss'  => JuanMa_JWT_Auth_Pro::ISSUER,
+			'iss'  => Auth_Handler::ISSUER,
 			'iat'  => time(),
 			'exp'  => time() + 3600,
 			'sub'  => $user_id,

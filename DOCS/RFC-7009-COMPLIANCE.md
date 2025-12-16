@@ -45,8 +45,8 @@ public function logout( WP_REST_Request $request ): WP_REST_Response {
         $this->revoke_refresh_token( $refresh_token );  // ← Immediate revocation
     }
 
-    // Delete refresh token cookie
-    wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME, self::COOKIE_PATH );
+    // Delete refresh token cookie (path is auto-detected)
+    wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME );
     
     return wp_auth_jwt_success_response( array(), 'Logout successful' );
 }
@@ -84,7 +84,7 @@ CREATE TABLE wp_jwt_refresh_tokens (
 public function revoke_refresh_token( string $refresh_token ): bool {
     global $wpdb;
     
-    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JWT_AUTH_PRO_SECRET );
+    $token_hash = wp_auth_jwt_hash_token( $refresh_token, JMJAP_SECRET );
     
     // Clear cache first for immediate effect
     $cache_key = 'jwt_token_' . md5( $token_hash );
@@ -284,7 +284,7 @@ const logout = async () => {
 
 ```php
 // Revoke specific user session
-$auth_jwt = new Auth_JWT();
+$auth_jwt = new JuanMa_JWT_Auth_Pro();
 $tokens = $auth_jwt->get_user_refresh_tokens( $user_id );
 
 foreach ( $tokens as $token ) {
@@ -321,3 +321,15 @@ JWT Auth Pro provides **full RFC 7009 compliance**, implementing enterprise-grad
 - **Future-proof** architecture following IETF standards
 
 By implementing RFC 7009, JWT Auth Pro delivers the **most secure JWT authentication solution** for WordPress, suitable for high-security environments including banking, healthcare, and government applications.
+
+---
+
+**Documentation Metadata**
+
+- **Last Updated**: 2025-12-14
+- **Plugin Version**: 1.2.x
+- **Compatibility**: WordPress 5.6+
+- **Status**: Current
+- **Review Date**: Every major release
+
+Found an issue with this documentation? [Report it](https://github.com/juanma-wp/wp-rest-auth-jwt/issues/new?labels=documentation)

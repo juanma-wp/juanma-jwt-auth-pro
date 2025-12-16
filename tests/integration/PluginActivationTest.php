@@ -13,6 +13,8 @@
  * @since     1.0.0
  */
 
+use JM_JWTAuthPro\Plugin;
+
 /**
  * Integration tests for plugin activation and deactivation.
  */
@@ -22,7 +24,7 @@ class PluginActivationTest extends WP_UnitTestCase
 	/**
 	 * Plugin instance for testing.
 	 *
-	 * @var JuanMa_JWT_Auth_Pro_Plugin
+	 * @var Plugin
 	 */
 	private $plugin;
 
@@ -33,9 +35,16 @@ class PluginActivationTest extends WP_UnitTestCase
 	{
 		parent::setUp();
 
-		// Ensure plugin class is loaded.
-		if (! class_exists('JuanMa_JWT_Auth_Pro_Plugin')) {
-			require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
+		// Main plugin file should be loaded by WordPress during activation.
+		// Verify it loaded correctly.
+		if (! class_exists(Plugin::class)) {
+			// Load it if not available (for unit test context).
+			if (file_exists(dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php')) {
+				require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
+			} else {
+				$this->markTestSkipped('Plugin not loaded in test environment.');
+				return;
+			}
 		}
 
 		// Set required constants.
@@ -43,7 +52,7 @@ class PluginActivationTest extends WP_UnitTestCase
 			define('JMJAP_SECRET', 'test-secret-key-minimum-32-characters-long-for-testing');
 		}
 
-		$this->plugin = new JuanMa_JWT_Auth_Pro_Plugin();
+		$this->plugin = new Plugin();
 	}
 
 	/**

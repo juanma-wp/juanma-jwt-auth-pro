@@ -17,11 +17,13 @@
  * @since     1.0.0
  */
 
+namespace JM_JWTAuthPro;
+
+use WPRestAuth\AuthToolkit\Http\CookieConfig;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-use WPRestAuth\AuthToolkit\Http\CookieConfig;
 
 /**
  * JWT Cookie Configuration Class.
@@ -29,7 +31,7 @@ use WPRestAuth\AuthToolkit\Http\CookieConfig;
  * Wrapper for the shared CookieConfig implementation from wp-rest-auth-toolkit.
  * Manages cookie security settings for JWT refresh tokens with environment detection.
  */
-class JuanMa_JWT_Auth_Pro_Cookie_Config {
+class Cookie_Config {
 
 	/**
 	 * Option name for storing cookie configuration.
@@ -121,7 +123,7 @@ class JuanMa_JWT_Auth_Pro_Cookie_Config {
 		}
 
 		// Override cookie name for JWT Auth.
-		$defaults['name'] = JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME;
+		$defaults['name'] = Auth_Handler::REFRESH_COOKIE_NAME;
 
 		return $defaults;
 	}
@@ -163,7 +165,7 @@ class JuanMa_JWT_Auth_Pro_Cookie_Config {
 		// Set JWT-specific cookie name as default if not customized by filters/constants.
 		// Check if name is still the toolkit default.
 		if ( 'auth_session' === $config['name'] ) {
-			$config['name'] = JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME;
+			$config['name'] = Auth_Handler::REFRESH_COOKIE_NAME;
 		}
 
 		return $config;
@@ -196,7 +198,7 @@ class JuanMa_JWT_Auth_Pro_Cookie_Config {
 	 */
 	public static function get_defaults(): array {
 		$defaults         = CookieConfig::getDefaults();
-		$defaults['name'] = JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME; // Override default name for JWT Auth.
+		$defaults['name'] = Auth_Handler::REFRESH_COOKIE_NAME; // Override default name for JWT Auth.
 		return $defaults;
 	}
 

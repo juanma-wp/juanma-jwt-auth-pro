@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use WPRestAuth\AuthToolkit\JWT\Base64Url;
 use WPRestAuth\AuthToolkit\JWT\Encoder;
 use WPRestAuth\AuthToolkit\Token\Generator;
 use WPRestAuth\AuthToolkit\Token\Hasher;
@@ -31,6 +32,7 @@ use WPRestAuth\AuthToolkit\Security\UserAgent;
 use WPRestAuth\AuthToolkit\Http\Cookie;
 use WPRestAuth\AuthToolkit\Http\Cors;
 use WPRestAuth\AuthToolkit\Http\Response;
+use JM_JWTAuthPro\Cookie_Config;
 
 /**
  * Encode a JWT token.
@@ -64,7 +66,7 @@ function wp_auth_jwt_decode( string $jwt, string $secret ) {
  * @deprecated Use WPRestAuth\AuthToolkit\JWT\Base64Url::encode() directly
  */
 function wp_auth_jwt_base64url_encode( string $data ): string {
-	return \WPRestAuth\AuthToolkit\JWT\Base64Url::encode( $data );
+	return Base64Url::encode( $data );
 }
 
 /**
@@ -75,7 +77,7 @@ function wp_auth_jwt_base64url_encode( string $data ): string {
  * @deprecated Use WPRestAuth\AuthToolkit\JWT\Base64Url::decode() directly
  */
 function wp_auth_jwt_base64url_decode( string $data ): string {
-	return \WPRestAuth\AuthToolkit\JWT\Base64Url::decode( $data );
+	return Base64Url::decode( $data );
 }
 
 /**
@@ -141,7 +143,7 @@ function wp_auth_jwt_set_cookie(
 	?bool $secure = null
 ): bool {
 	// Get environment-aware configuration.
-	$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+	$config = Cookie_Config::get_config();
 
 	// Use provided values or fall back to auto-detected config.
 	$path     = $path ?? $config['path'];

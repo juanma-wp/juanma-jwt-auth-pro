@@ -26,11 +26,8 @@
     "psr-4": {
       "JM_JWTAuthPro\\": "includes/"
     },
-    "classmap": [
-      "includes/class-jwt-auth-pro-admin-settings.php",
-      "includes/class-jwt-cookie-config.php",
-      "includes/class-auth-jwt.php",
-      "includes/class-openapi-spec.php"
+    "files": [
+      "includes/helpers.php"
     ]
   }
 }

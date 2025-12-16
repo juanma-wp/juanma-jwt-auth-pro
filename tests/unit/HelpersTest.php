@@ -26,9 +26,9 @@ class HelpersTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		// Load helpers
+		// Verify helper functions autoloaded via Composer "files".
 		if ( ! function_exists( 'wp_auth_jwt_generate_token' ) ) {
-			require_once dirname( __DIR__, 2 ) . '/includes/helpers.php';
+			throw new \Exception( 'Helper functions not autoloaded via Composer files array.' );
 		}
 
 		// Define constants for testing
