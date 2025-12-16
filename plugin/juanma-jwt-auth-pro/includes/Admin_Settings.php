@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin settings class for JWT Auth Pro plugin.
  * Extends BaseAdminSettings to leverage common settings functionality.
  */
-class JuanMa_JWT_Auth_Pro_Admin_Settings extends BaseAdminSettings {
+class Admin_Settings extends BaseAdminSettings {
 
 
 
@@ -87,15 +87,15 @@ class JuanMa_JWT_Auth_Pro_Admin_Settings extends BaseAdminSettings {
 	 * @return string The cookie configuration class name.
 	 */
 	protected function getCookieConfigClass(): string {
-		return 'JuanMa_JWT_Auth_Pro_Cookie_Config';
+		return Cookie_Config::class;
 	}
 
 	/**
-	 * Override to provide the cookie name from Auth_JWT class
+	 * Override to provide the cookie name from Auth_Handler class
 	 */
 	protected function getCookieName(): ?string {
-		if ( class_exists( '\Auth_JWT' ) ) {
-			return \Auth_JWT::REFRESH_COOKIE_NAME;
+		if ( class_exists( 'JM_JWTAuthPro\Auth_Handler' ) ) {
+			return Auth_Handler::REFRESH_COOKIE_NAME;
 		}
 		return 'wp_jwt_refresh_token';
 	}

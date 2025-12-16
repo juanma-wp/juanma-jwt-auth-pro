@@ -1,7 +1,7 @@
 <?php
 
 use WPRestAuthJWT\Tests\Helpers\TestCase;
-use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro;
+use JM_JWTAuthPro\Auth_Handler;
 
 /**
  * Integration tests for JWT REST API functionality
@@ -12,7 +12,7 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 	/**
 	 * Auth JWT instance.
 	 *
-	 * @var JuanMa_JWT_Auth_Pro
+	 * @var Auth_Handler
 	 */
 	private $auth_jwt;
 
@@ -85,12 +85,12 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 		do_action('rest_api_init');
 
 		// Verify integration test environment has autoloader initialized.
-		if (! class_exists('JM_JWTAuthPro\JuanMa_JWT_Auth_Pro')) {
+		if (! class_exists(Auth_Handler::class)) {
 			$this->markTestSkipped('Autoloader not initialized for integration tests.');
 			return;
 		}
 
-		$this->auth_jwt = new JuanMa_JWT_Auth_Pro();
+		$this->auth_jwt = new Auth_Handler();
 		$this->auth_jwt->register_routes();
 	}
 
@@ -264,7 +264,7 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 		$request = new WP_REST_Request('POST', '/jwt/v1/refresh');
 
 		// Simulate HTTPOnly cookie
-		$_COOKIE[JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME] = $refresh_token;
+		$_COOKIE[Auth_Handler::REFRESH_COOKIE_NAME] = $refresh_token;
 
 		$response = $this->server->dispatch($request);
 
@@ -279,7 +279,7 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 		}
 
 		// Clean up
-		unset($_COOKIE[JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME]);
+		unset($_COOKIE[Auth_Handler::REFRESH_COOKIE_NAME]);
 	}
 
 	/**
@@ -312,8 +312,8 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 
 		// Simulate cross-origin REST API request where $_COOKIE isn't populated
 		// but cookie is in HTTP_COOKIE header
-		unset($_COOKIE[JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME]);
-		$_SERVER['HTTP_COOKIE'] = JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME . '=' . $refresh_token;
+		unset($_COOKIE[Auth_Handler::REFRESH_COOKIE_NAME]);
+		$_SERVER['HTTP_COOKIE'] = Auth_Handler::REFRESH_COOKIE_NAME . '=' . $refresh_token;
 
 		$response = $this->server->dispatch($request);
 
@@ -350,7 +350,7 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 		$response = $this->server->dispatch($request);
 
 		// Test that CORS is handled via Cors class from toolkit
-		$this->assertTrue(class_exists('\WPRestAuth\AuthToolkit\Http\Cors'));
+		$this->assertTrue(class_exists('WPRestAuth\AuthToolkit\Http\Cors'));
 
 		// Clean up
 		unset($_SERVER['HTTP_ORIGIN']);
@@ -395,7 +395,7 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 	{
 		// Create expired token payload
 		$expired_payload = array(
-			'iss' => JuanMa_JWT_Auth_Pro::ISSUER,
+			'iss' => Auth_Handler::ISSUER,
 			'exp' => time() - 3600, // Expired 1 hour ago
 			'iat' => time() - 3600,
 			'sub' => 123,

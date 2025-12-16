@@ -3,7 +3,7 @@
 /**
  * JWT Cookie Configuration Integration Tests
  *
- * Integration tests for the JuanMa_JWT_Auth_Pro_Cookie_Config wrapper class.
+ * Integration tests for the Cookie_Config wrapper class.
  * Tests that the wrapper correctly delegates to the toolkit implementation
  * and maintains backwards compatibility with WordPress integration.
  *
@@ -20,8 +20,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Cookie_Config;
-use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro;
+use JM_JWTAuthPro\Cookie_Config;
+use JM_JWTAuthPro\Auth_Handler;
 
 /**
  * Integration tests for JWT Cookie Configuration wrapper.
@@ -44,7 +44,7 @@ class CookieConfigTest extends TestCase
 		parent::setUp();
 
 		// Verify classes autoloaded correctly.
-		if (! class_exists('JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Cookie_Config')) {
+		if (! class_exists(Cookie_Config::class)) {
 			throw new \Exception('Cookie config class not autoloaded.');
 		}
 
@@ -52,7 +52,7 @@ class CookieConfigTest extends TestCase
 		$this->original_server = $_SERVER;
 
 		// Clear configuration cache before each test.
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+		Cookie_Config::clear_cache();
 	}
 
 	/**
@@ -60,7 +60,7 @@ class CookieConfigTest extends TestCase
 	 */
 	public function testWrapperClassExists(): void
 	{
-		$this->assertTrue(class_exists('JuanMa_JWT_Auth_Pro_Cookie_Config'));
+		$this->assertTrue(class_exists(Cookie_Config::class));
 		$this->assertTrue(class_exists('WPRestAuth\\AuthToolkit\\Http\\CookieConfig'));
 	}
 
@@ -69,7 +69,7 @@ class CookieConfigTest extends TestCase
 	 */
 	public function testWrapperReturnsCompleteConfig(): void
 	{
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		$config = Cookie_Config::get_config();
 
 		$this->assertIsArray($config);
 		$this->assertArrayHasKey('enabled', $config);
@@ -94,8 +94,8 @@ class CookieConfigTest extends TestCase
 			return 'custom_jwt_session';
 		});
 
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		Cookie_Config::clear_cache();
+		$config = Cookie_Config::get_config();
 
 		$this->assertSame('custom_jwt_session', $config['name']);
 
@@ -113,8 +113,8 @@ class CookieConfigTest extends TestCase
 			return $config;
 		});
 
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		Cookie_Config::clear_cache();
+		$config = Cookie_Config::get_config();
 
 		$this->assertSame('filtered_session', $config['name']);
 		$this->assertSame(7200, $config['lifetime']);
@@ -140,7 +140,7 @@ class CookieConfigTest extends TestCase
 	 */
 	public function testGetDefaultsReturnsPluginDefaults(): void
 	{
-		$defaults = JuanMa_JWT_Auth_Pro_Cookie_Config::get_defaults();
+		$defaults = Cookie_Config::get_defaults();
 
 		$this->assertIsArray($defaults);
 		$this->assertArrayHasKey('name', $defaults);
@@ -164,14 +164,14 @@ class CookieConfigTest extends TestCase
 			return $new_config;
 		});
 
-		$result = JuanMa_JWT_Auth_Pro_Cookie_Config::update_config($new_config);
+		$result = Cookie_Config::update_config($new_config);
 		$this->assertTrue($result);
 
 		remove_all_filters('pre_update_option_jwt_auth_cookie_config');
 
 		// Clean up - delete the option so it doesn't affect other tests
 		delete_option('jwt_auth_cookie_config');
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+		Cookie_Config::clear_cache();
 	}
 
 	/**
@@ -180,13 +180,13 @@ class CookieConfigTest extends TestCase
 	public function testBackwardsCompatibility(): void
 	{
 		// All public methods should exist
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'get_config'));
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'update_config'));
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'get_defaults'));
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'get_environment'));
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'is_development'));
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'is_production'));
-		$this->assertTrue(method_exists('JuanMa_JWT_Auth_Pro_Cookie_Config', 'clear_cache'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'get_config'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'update_config'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'get_defaults'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'get_environment'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'is_development'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'is_production'));
+		$this->assertTrue(method_exists(Cookie_Config::class, 'clear_cache'));
 	}
 
 	/**
@@ -199,8 +199,8 @@ class CookieConfigTest extends TestCase
 			return 'filtered_cookie_name';
 		});
 
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		Cookie_Config::clear_cache();
+		$config = Cookie_Config::get_config();
 
 		$this->assertSame('filtered_cookie_name', $config['name']);
 
@@ -215,11 +215,11 @@ class CookieConfigTest extends TestCase
 	public function testConfigFileLoadsEnvironmentDefaults(): void
 	{
 		$_SERVER['HTTP_HOST'] = 'localhost';
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+		Cookie_Config::clear_cache();
 
 		// get_environment_defaults() now delegates to toolkit and returns empty array.
 		// The actual environment-specific config is available through get_config().
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		$config = Cookie_Config::get_config();
 
 		$this->assertIsArray($config);
 		$this->assertArrayHasKey('name', $config);
@@ -229,7 +229,7 @@ class CookieConfigTest extends TestCase
 	}
 
 	/**
-	 * Test that cookie name in config matches JuanMa_JWT_Auth_Pro constant.
+	 * Test that cookie name in config matches Auth_Handler constant.
 	 *
 	 * Prevents regression where admin panel showed wrong cookie name.
 	 *
@@ -238,14 +238,14 @@ class CookieConfigTest extends TestCase
 	public function testCookieNameMatchesAuthJWTConstant(): void
 	{
 		$_SERVER['HTTP_HOST'] = 'localhost';
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+		Cookie_Config::clear_cache();
 
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		$config = Cookie_Config::get_config();
 
 		$this->assertSame(
-			JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME,
+			Auth_Handler::REFRESH_COOKIE_NAME,
 			$config['name'],
-			'Cookie name in config must match JuanMa_JWT_Auth_Pro::REFRESH_COOKIE_NAME constant'
+			'Cookie name in config must match Auth_Handler::REFRESH_COOKIE_NAME constant'
 		);
 	}
 
@@ -264,8 +264,8 @@ class CookieConfigTest extends TestCase
 		unset($_SERVER['HTTP_X_FORWARDED_PROTO']);
 		unset($_SERVER['HTTP_ORIGIN']); // No origin = same-origin
 
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		Cookie_Config::clear_cache();
+		$config = Cookie_Config::get_config();
 
 		$this->assertFalse(
 			$config['secure'],
@@ -292,8 +292,8 @@ class CookieConfigTest extends TestCase
 		$_SERVER['HTTP_HOST'] = 'localhost';
 		$_SERVER['HTTPS']     = 'on';
 
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		Cookie_Config::clear_cache();
+		$config = Cookie_Config::get_config();
 
 		$this->assertTrue(
 			$config['secure'],
@@ -320,8 +320,8 @@ class CookieConfigTest extends TestCase
 		$_SERVER['HTTPS']     = 'off';
 		unset($_SERVER['HTTP_ORIGIN']); // No origin = same-origin
 
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_config();
+		Cookie_Config::clear_cache();
+		$config = Cookie_Config::get_config();
 
 		// In development without cross-origin, we use SameSite=Lax
 		if ('development' === $config['environment']) {
@@ -348,7 +348,7 @@ class CookieConfigTest extends TestCase
 	 */
 	public function testAllEnvironmentConfigsAreValid(string $environment): void
 	{
-		$config = JuanMa_JWT_Auth_Pro_Cookie_Config::get_environment_defaults($environment);
+		$config = Cookie_Config::get_environment_defaults($environment);
 
 		$this->assertIsArray($config);
 		$this->assertArrayHasKey('name', $config);
@@ -395,7 +395,7 @@ class CookieConfigTest extends TestCase
 		$_SERVER = $this->original_server;
 
 		// Clear configuration cache.
-		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
+		Cookie_Config::clear_cache();
 
 		// Remove all test filters.
 		remove_all_filters('jwt_auth_cookie_config');
