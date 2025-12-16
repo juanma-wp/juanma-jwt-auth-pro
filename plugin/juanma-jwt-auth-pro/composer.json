@@ -31,6 +31,9 @@
       "includes/class-jwt-cookie-config.php",
       "includes/class-auth-jwt.php",
       "includes/class-openapi-spec.php"
+    ],
+    "files": [
+      "includes/helpers.php"
     ]
   }
 }

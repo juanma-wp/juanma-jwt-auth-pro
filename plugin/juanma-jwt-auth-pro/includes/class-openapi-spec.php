@@ -13,7 +13,9 @@
  * @since     1.0.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+namespace JM_JWTAuthPro;
+
+if ( ! \defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -35,7 +37,7 @@ class JuanMa_JWT_Auth_Pro_OpenAPI_Spec {
 	 */
 	public function register_routes(): void {
 		// Only register the OpenAPI spec endpoint in REST API.
-		register_rest_route(
+		\register_rest_route(
 			self::REST_NAMESPACE,
 			'/openapi',
 			array(
@@ -49,25 +51,25 @@ class JuanMa_JWT_Auth_Pro_OpenAPI_Spec {
 	/**
 	 * Get the OpenAPI specification.
 	 *
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $request Request object.
 	 */
-	public function get_openapi_spec( WP_REST_Request $request ): void {
-		$yaml_file = JMJAP_PLUGIN_DIR . 'openapi.yml';
+	public function get_openapi_spec( \WP_REST_Request $request ): void {
+		$yaml_file = \JMJAP_PLUGIN_DIR . 'openapi.yml';
 
-		if ( ! file_exists( $yaml_file ) ) {
-			status_header( 404 );
-			header( 'Content-Type: application/json' );
+		if ( ! \file_exists( $yaml_file ) ) {
+			\status_header( 404 );
+			\header( 'Content-Type: application/json' );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo wp_json_encode( array( 'error' => 'OpenAPI specification file not found' ) );
+			echo \wp_json_encode( array( 'error' => 'OpenAPI specification file not found' ) );
 			exit;
 		}
 
 		// Read and output YAML directly with proper headers.
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$yaml_content = file_get_contents( $yaml_file );
+		$yaml_content = \file_get_contents( $yaml_file );
 
 		// Send YAML content directly.
-		header( 'Content-Type: application/x-yaml' );
+		\header( 'Content-Type: application/x-yaml' );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $yaml_content;
 		exit;

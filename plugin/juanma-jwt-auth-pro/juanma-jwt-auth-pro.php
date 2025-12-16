@@ -88,14 +88,14 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 	/**
 	 * Auth JWT instance.
 	 *
-	 * @var JuanMa_JWT_Auth_Pro
+	 * @var JM_JWTAuthPro\JuanMa_JWT_Auth_Pro
 	 */
 	private $auth_jwt;
 
 	/**
 	 * OpenAPI Spec instance.
 	 *
-	 * @var JuanMa_JWT_Auth_Pro_OpenAPI_Spec
+	 * @var JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_OpenAPI_Spec
 	 */
 	private $openapi_spec;
 
@@ -127,12 +127,11 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 	 * Load plugin dependencies.
 	 */
 	private function load_dependencies(): void {
-		// Helper functions file (will move to Composer "files" in Phase 2).
-		require_once JMJAP_PLUGIN_DIR . 'includes/helpers.php';
+		// All files loaded via Composer autoloader (composer.json).
+		// - Classes: Autoloaded via PSR-4 + classmap (JM_JWTAuthPro namespace)
+		// - Functions: Composer "files" array (includes/helpers.php)
 
-		// Classes are autoloaded via Composer classmap.
-		// See composer.json "autoload" → "classmap" section.
-		// After Phase 2 migration, all classes will use PSR-4 autoloading.
+		// Nothing to manually load anymore.
 	}
 
 	/**
@@ -169,8 +168,8 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 			new JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Admin_Settings();
 		}
 
-		$this->auth_jwt     = new JuanMa_JWT_Auth_Pro();
-		$this->openapi_spec = new JuanMa_JWT_Auth_Pro_OpenAPI_Spec();
+		$this->auth_jwt     = new JM_JWTAuthPro\JuanMa_JWT_Auth_Pro();
+		$this->openapi_spec = new JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_OpenAPI_Spec();
 	}
 
 	/**

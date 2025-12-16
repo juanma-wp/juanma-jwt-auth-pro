@@ -23,11 +23,14 @@
  * @link      https://github.com/juanma-wp/wp-rest-auth-jwt
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+namespace JM_JWTAuthPro;
 
 use WPRestAuth\AuthToolkit\Http\Cookie;
+use WPRestAuth\AuthToolkit\Token\RefreshTokenManager;
+
+if ( ! \defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * JWT Authentication Handler Class.
@@ -57,11 +60,11 @@ class JuanMa_JWT_Auth_Pro {
 		// Get secret but don't fail if not configured yet.
 		// Use a placeholder if not set - actual operations will check for valid secret.
 		$secret = '';
-		if ( defined( 'JMJAP_SECRET' ) ) {
-			$secret = JMJAP_SECRET;
+		if ( \defined( 'JMJAP_SECRET' ) ) {
+			$secret = \JMJAP_SECRET;
 		} else {
 			// Try to get from database (lazy load).
-			$jwt_settings = get_option( 'jwt_auth_pro_settings', array() );
+			$jwt_settings = \get_option( 'jwt_auth_pro_settings', array() );
 			$secret       = $jwt_settings['secret_key'] ?? '';
 		}
 
@@ -72,7 +75,7 @@ class JuanMa_JWT_Auth_Pro {
 		}
 
 		// Initialize refresh token manager.
-		$this->refresh_token_manager = new \WPRestAuth\AuthToolkit\Token\RefreshTokenManager(
+		$this->refresh_token_manager = new RefreshTokenManager(
 			$wpdb->prefix . 'jwt_refresh_tokens',
 			$secret,
 			'jwt'
@@ -84,7 +87,7 @@ class JuanMa_JWT_Auth_Pro {
 	 * Register REST API routes for JWT authentication.
 	 */
 	public function register_routes(): void {
-		register_rest_route(
+		\register_rest_route(
 			self::REST_NAMESPACE,
 			'/token',
 			array(
@@ -105,7 +108,7 @@ class JuanMa_JWT_Auth_Pro {
 			)
 		);
 
-		register_rest_route(
+		\register_rest_route(
 			self::REST_NAMESPACE,
 			'/refresh',
 			array(
@@ -115,7 +118,7 @@ class JuanMa_JWT_Auth_Pro {
 			)
 		);
 
-		register_rest_route(
+		\register_rest_route(
 			self::REST_NAMESPACE,
 			'/logout',
 			array(
@@ -125,7 +128,7 @@ class JuanMa_JWT_Auth_Pro {
 			)
 		);
 
-		register_rest_route(
+		\register_rest_route(
 			self::REST_NAMESPACE,
 			'/verify',
 			array(
@@ -147,38 +150,38 @@ class JuanMa_JWT_Auth_Pro {
 	public function generate_access_token( int $user_id, array $extra_claims = array() ): string {
 		// Get JWT settings with fallbacks.
 		// Always use direct database query for REST API requests.
-		$jwt_settings = get_option( 'jwt_auth_pro_settings', array() );
-		$secret       = defined( 'JMJAP_SECRET' ) ? JMJAP_SECRET : ( $jwt_settings['secret_key'] ?? '' );
-		$ttl          = defined( 'JMJAP_ACCESS_TTL' ) ? JMJAP_ACCESS_TTL : ( $jwt_settings['access_token_expiry'] ?? 3600 );
+		$jwt_settings = \get_option( 'jwt_auth_pro_settings', array() );
+		$secret       = \defined( 'JMJAP_SECRET' ) ? \JMJAP_SECRET : ( $jwt_settings['secret_key'] ?? '' );
+		$ttl          = \defined( 'JMJAP_ACCESS_TTL' ) ? \JMJAP_ACCESS_TTL : ( $jwt_settings['access_token_expiry'] ?? 3600 );
 
 		if ( empty( $secret ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'JWT Auth: Secret not configured. Please set JMJAP_SECRET constant or configure in settings.' );
+			if ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
+				\error_log( 'JWT Auth: Secret not configured. Please set JMJAP_SECRET constant or configure in settings.' );
 			}
 			throw new \Exception( 'JWT secret not configured' );
 		}
 
-		$now    = time();
+		$now    = \time();
 		$claims = array(
 			'iss' => self::ISSUER,
 			'sub' => (string) $user_id,
 			'iat' => $now,
 			'exp' => $now + $ttl,
-			'jti' => wp_auth_jwt_generate_token( 16 ),
+			'jti' => \wp_auth_jwt_generate_token( 16 ),
 		);
 		if ( ! empty( $extra_claims ) ) {
-			$claims = array_merge( $claims, $extra_claims );
+			$claims = \array_merge( $claims, $extra_claims );
 		}
-		return wp_auth_jwt_encode( $claims, $secret );
+		return \wp_auth_jwt_encode( $claims, $secret );
 	}
 
 	/**
 	 * Issue a new access token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response|WP_Error Response or error.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response|\WP_Error Response or error.
 	 */
-	public function issue_token( WP_REST_Request $request ) {
+	public function issue_token( \WP_REST_Request $request ) {
 		// Handle CORS preflight using toolkit.
 		if ( \WPRestAuth\AuthToolkit\Http\Cors::isOptionsRequest() ) {
 			return \WPRestAuth\AuthToolkit\Http\Cors::handleOptionsRequest();
@@ -188,17 +191,17 @@ class JuanMa_JWT_Auth_Pro {
 		$password = $request->get_param( 'password' );
 
 		if ( empty( $username ) || empty( $password ) ) {
-			return wp_auth_jwt_error_response(
+			return \wp_auth_jwt_error_response(
 				'missing_credentials',
 				'Username and password are required',
 				400
 			);
 		}
 
-		$user = wp_authenticate( $username, $password );
+		$user = \wp_authenticate( $username, $password );
 
-		if ( is_wp_error( $user ) ) {
-			return wp_auth_jwt_error_response(
+		if ( \is_wp_error( $user ) ) {
+			return \wp_auth_jwt_error_response(
 				'invalid_credentials',
 				'Invalid username or password',
 				403
@@ -206,20 +209,20 @@ class JuanMa_JWT_Auth_Pro {
 		}
 
 		// Generate access token (JWT).
-		$now           = time();
+		$now           = \time();
 		$access_claims = array(
-			'roles' => array_values( $user->roles ),
+			'roles' => \array_values( $user->roles ),
 		);
 		$access_token  = $this->generate_access_token( (int) $user->ID, $access_claims );
 
 		// Get JWT settings with fallbacks.
 		// Always use direct database query for REST API requests.
-		$jwt_settings = get_option( 'jwt_auth_pro_settings', array() );
-		$access_ttl   = defined( 'JMJAP_ACCESS_TTL' ) ? JMJAP_ACCESS_TTL : ( $jwt_settings['access_token_expiry'] ?? 3600 );
-		$refresh_ttl  = defined( 'JMJAP_REFRESH_TTL' ) ? JMJAP_REFRESH_TTL : ( $jwt_settings['refresh_token_expiry'] ?? 2592000 );
+		$jwt_settings = \get_option( 'jwt_auth_pro_settings', array() );
+		$access_ttl   = \defined( 'JMJAP_ACCESS_TTL' ) ? \JMJAP_ACCESS_TTL : ( $jwt_settings['access_token_expiry'] ?? 3600 );
+		$refresh_ttl  = \defined( 'JMJAP_REFRESH_TTL' ) ? \JMJAP_REFRESH_TTL : ( $jwt_settings['refresh_token_expiry'] ?? 2592000 );
 
 		// Generate refresh token.
-		$refresh_token   = wp_auth_jwt_generate_token( 64 );
+		$refresh_token   = \wp_auth_jwt_generate_token( 64 );
 		$refresh_expires = $now + $refresh_ttl;
 
 		// Store refresh token.
@@ -227,7 +230,7 @@ class JuanMa_JWT_Auth_Pro {
 
 		// Set refresh token as HTTPOnly cookie with environment-aware configuration.
 		// Path, httponly, and secure are auto-detected based on environment.
-		wp_auth_jwt_set_cookie(
+		\wp_auth_jwt_set_cookie(
 			self::REFRESH_COOKIE_NAME,
 			$refresh_token,
 			$refresh_expires
@@ -237,10 +240,10 @@ class JuanMa_JWT_Auth_Pro {
 			'access_token' => $access_token,
 			'token_type'   => 'Bearer',
 			'expires_in'   => $access_ttl,
-			'user'         => wp_auth_jwt_format_user_data( $user ),
+			'user'         => \wp_auth_jwt_format_user_data( $user ),
 		);
 
-		return wp_auth_jwt_success_response(
+		return \wp_auth_jwt_success_response(
 			$response_data,
 			'Authentication successful'
 		);
@@ -249,10 +252,10 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Refresh an access token using a refresh token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response|WP_Error Response or error.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response|\WP_Error Response or error.
 	 */
-	public function refresh_access_token( WP_REST_Request $request ) {
+	public function refresh_access_token( \WP_REST_Request $request ) {
 		// Handle CORS preflight using toolkit.
 		if ( \WPRestAuth\AuthToolkit\Http\Cors::isOptionsRequest() ) {
 			return \WPRestAuth\AuthToolkit\Http\Cors::handleOptionsRequest();
@@ -262,7 +265,7 @@ class JuanMa_JWT_Auth_Pro {
 		$refresh_token = Cookie::get( self::REFRESH_COOKIE_NAME, '' );
 
 		if ( empty( $refresh_token ) ) {
-			return wp_auth_jwt_error_response(
+			return \wp_auth_jwt_error_response(
 				'missing_refresh_token',
 				'Refresh token not found',
 				401
@@ -271,13 +274,13 @@ class JuanMa_JWT_Auth_Pro {
 
 		$token_data = $this->validate_refresh_token( $refresh_token );
 
-		if ( is_wp_error( $token_data ) ) {
+		if ( \is_wp_error( $token_data ) ) {
 			return $token_data;
 		}
 
-		$user = get_user_by( 'id', $token_data['user_id'] );
+		$user = \get_user_by( 'id', $token_data['user_id'] );
 		if ( ! $user ) {
-			return wp_auth_jwt_error_response(
+			return \wp_auth_jwt_error_response(
 				'invalid_user',
 				'User not found',
 				401
@@ -285,34 +288,34 @@ class JuanMa_JWT_Auth_Pro {
 		}
 
 		// Generate new access token.
-		$now           = time();
+		$now           = \time();
 		$access_claims = array(
-			'roles' => array_values( $user->roles ),
+			'roles' => \array_values( $user->roles ),
 		);
 		$access_token  = $this->generate_access_token( (int) $user->ID, $access_claims );
 
 		// Optionally rotate refresh token for better security.
-		if ( apply_filters( 'juanma_jwt_auth_pro_rotate_refresh_token', true ) ) {
-			$new_refresh_token = wp_auth_jwt_generate_token( 64 );
-			$refresh_expires   = $now + JMJAP_REFRESH_TTL;
+		if ( \apply_filters( 'juanma_jwt_auth_pro_rotate_refresh_token', true ) ) {
+			$new_refresh_token = \wp_auth_jwt_generate_token( 64 );
+			$refresh_expires   = $now + \JMJAP_REFRESH_TTL;
 
 			// Rotate refresh token (revoke old, create new).
 			$this->rotate_refresh_token( $refresh_token, $new_refresh_token, (int) $user->ID, $refresh_expires );
 
 			// Set new refresh token cookie with environment-aware configuration.
 			// Path, httponly, and secure are auto-detected based on environment.
-			wp_auth_jwt_set_cookie(
+			\wp_auth_jwt_set_cookie(
 				self::REFRESH_COOKIE_NAME,
 				$new_refresh_token,
 				$refresh_expires
 			);
 		}
 
-		return wp_auth_jwt_success_response(
+		return \wp_auth_jwt_success_response(
 			array(
 				'access_token' => $access_token,
 				'token_type'   => 'Bearer',
-				'expires_in'   => JMJAP_ACCESS_TTL,
+				'expires_in'   => \JMJAP_ACCESS_TTL,
 			),
 			'Token refreshed successfully'
 		);
@@ -321,10 +324,10 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Logout and revoke refresh token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response Success response.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response Success response.
 	 */
-	public function logout( WP_REST_Request $request ): WP_REST_Response {
+	public function logout( \WP_REST_Request $request ): \WP_REST_Response {
 		// Handle CORS preflight using toolkit.
 		if ( \WPRestAuth\AuthToolkit\Http\Cors::isOptionsRequest() ) {
 			return \WPRestAuth\AuthToolkit\Http\Cors::handleOptionsRequest();
@@ -338,43 +341,43 @@ class JuanMa_JWT_Auth_Pro {
 		}
 
 		// Delete refresh token cookie with environment-aware path detection.
-		wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME );
+		\wp_auth_jwt_delete_cookie( self::REFRESH_COOKIE_NAME );
 
-		return wp_auth_jwt_success_response( array(), 'Logout successful' );
+		return \wp_auth_jwt_success_response( array(), 'Logout successful' );
 	}
 
 	/**
 	 * Verify a JWT token.
 	 *
-	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response|WP_Error Response or error.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response|\WP_Error Response or error.
 	 */
-	public function verify_token( WP_REST_Request $request ) {
+	public function verify_token( \WP_REST_Request $request ) {
 
 		// Support bearer header directly on verify.
 		$auth_header = $request->get_header( 'Authorization' );
-		if ( $auth_header && 0 === stripos( $auth_header, 'Bearer ' ) ) {
-			$token       = trim( substr( $auth_header, 7 ) );
+		if ( $auth_header && 0 === \stripos( $auth_header, 'Bearer ' ) ) {
+			$token       = \trim( \substr( $auth_header, 7 ) );
 			$auth_result = $this->authenticate_bearer( $token );
-			if ( is_wp_error( $auth_result ) ) {
+			if ( \is_wp_error( $auth_result ) ) {
 				return $auth_result;
 			}
 		}
 
-		$user = wp_get_current_user();
+		$user = \wp_get_current_user();
 
 		if ( ! $user->exists() ) {
-			return wp_auth_jwt_error_response(
+			return \wp_auth_jwt_error_response(
 				'not_authenticated',
 				'No valid token provided',
 				401
 			);
 		}
 
-		return wp_auth_jwt_success_response(
+		return \wp_auth_jwt_success_response(
 			array(
 				'valid' => true,
-				'user'  => wp_auth_jwt_format_user_data( $user, true ),
+				'user'  => \wp_auth_jwt_format_user_data( $user, true ),
 			),
 			'Token is valid'
 		);
@@ -384,53 +387,53 @@ class JuanMa_JWT_Auth_Pro {
 	 * Authenticate using a bearer token.
 	 *
 	 * @param string $token The JWT token.
-	 * @return WP_User|WP_Error User object or error.
+	 * @return \WP_User|\WP_Error User object or error.
 	 */
 	public function authenticate_bearer( string $token ) {
 		// Get secret lazily - check constant first, then admin settings.
-		$secret = defined( 'JMJAP_SECRET' ) ? JMJAP_SECRET : '';
+		$secret = \defined( 'JMJAP_SECRET' ) ? \JMJAP_SECRET : '';
 		if ( empty( $secret ) ) {
-			$jwt_settings = get_option( 'jwt_auth_pro_settings', array() );
+			$jwt_settings = \get_option( 'jwt_auth_pro_settings', array() );
 			$secret       = $jwt_settings['secret_key'] ?? '';
 		}
 
 		if ( empty( $secret ) ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'jwt_secret_missing',
 				'JWT secret not configured',
 				array( 'status' => 500 )
 			);
 		}
 
-		$payload = wp_auth_jwt_decode( $token, $secret );
+		$payload = \wp_auth_jwt_decode( $token, $secret );
 
 		if ( ! $payload ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'invalid_token',
 				'Invalid or expired JWT token',
 				array( 'status' => 401 )
 			);
 		}
 
-		$user_id = intval( $payload['sub'] ?? 0 );
+		$user_id = \intval( $payload['sub'] ?? 0 );
 		if ( ! $user_id ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'invalid_token_subject',
 				'Invalid token subject',
 				array( 'status' => 401 )
 			);
 		}
 
-		$user = get_user_by( 'id', $user_id );
+		$user = \get_user_by( 'id', $user_id );
 		if ( ! $user ) {
-			return new WP_Error(
+			return new \WP_Error(
 				'invalid_token_user',
 				'User not found',
 				array( 'status' => 401 )
 			);
 		}
 
-		wp_set_current_user( $user->ID );
+		\wp_set_current_user( $user->ID );
 		return $user;
 	}
 
@@ -444,8 +447,8 @@ class JuanMa_JWT_Auth_Pro {
 	 */
 	public function store_refresh_token( int $user_id, string $refresh_token, int $expires_at ): bool {
 		if ( ! $this->refresh_token_manager ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'JWT Auth: Cannot store refresh token - RefreshTokenManager not initialized' );
+			if ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
+				\error_log( 'JWT Auth: Cannot store refresh token - RefreshTokenManager not initialized' );
 			}
 			return false;
 		}
@@ -454,7 +457,7 @@ class JuanMa_JWT_Auth_Pro {
 			$refresh_token,
 			$expires_at,
 			array(
-				'issued_at' => time(),
+				'issued_at' => \time(),
 			)
 		);
 	}
@@ -463,11 +466,11 @@ class JuanMa_JWT_Auth_Pro {
 	 * Validate refresh token.
 	 *
 	 * @param string $refresh_token The refresh token to validate.
-	 * @return array|WP_Error Token data or error if invalid.
+	 * @return array|\WP_Error Token data or error if invalid.
 	 */
 	private function validate_refresh_token( string $refresh_token ) {
 		if ( ! $this->refresh_token_manager ) {
-			return wp_auth_jwt_error_response(
+			return \wp_auth_jwt_error_response(
 				'configuration_error',
 				'JWT authentication is not properly configured',
 				500
@@ -477,7 +480,7 @@ class JuanMa_JWT_Auth_Pro {
 		$token_data = $this->refresh_token_manager->validate( $refresh_token );
 
 		if ( ! $token_data ) {
-			return wp_auth_jwt_error_response(
+			return \wp_auth_jwt_error_response(
 				'invalid_refresh_token',
 				'Invalid or expired refresh token',
 				401
@@ -498,8 +501,8 @@ class JuanMa_JWT_Auth_Pro {
 	 */
 	private function rotate_refresh_token( string $old_refresh_token, string $new_refresh_token, int $user_id, int $expires_at ): bool {
 		if ( ! $this->refresh_token_manager ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'JWT Auth: Cannot rotate refresh token - RefreshTokenManager not initialized' );
+			if ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
+				\error_log( 'JWT Auth: Cannot rotate refresh token - RefreshTokenManager not initialized' );
 			}
 			return false;
 		}
@@ -509,7 +512,7 @@ class JuanMa_JWT_Auth_Pro {
 			$user_id,
 			$expires_at,
 			array(
-				'issued_at' => time(),
+				'issued_at' => \time(),
 			)
 		);
 	}
@@ -522,8 +525,8 @@ class JuanMa_JWT_Auth_Pro {
 	 */
 	public function revoke_refresh_token( string $refresh_token ): bool {
 		if ( ! $this->refresh_token_manager ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'JWT Auth: Cannot revoke refresh token - RefreshTokenManager not initialized' );
+			if ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
+				\error_log( 'JWT Auth: Cannot revoke refresh token - RefreshTokenManager not initialized' );
 			}
 			return false;
 		}
@@ -552,8 +555,8 @@ class JuanMa_JWT_Auth_Pro {
 	 */
 	public function revoke_user_token( int $user_id, int $token_id ): bool {
 		if ( ! $this->refresh_token_manager ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'JWT Auth: Cannot revoke user token - RefreshTokenManager not initialized' );
+			if ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
+				\error_log( 'JWT Auth: Cannot revoke user token - RefreshTokenManager not initialized' );
 			}
 			return false;
 		}
@@ -566,11 +569,11 @@ class JuanMa_JWT_Auth_Pro {
 	/**
 	 * Check if user is authenticated.
 	 *
-	 * @param WP_REST_Request|null $request Optional request object.
+	 * @param \WP_REST_Request|null $request Optional request object.
 	 * @return bool True if authenticated, false otherwise.
 	 */
-	public function whoami( ?WP_REST_Request $request = null ): bool {
-		$user = wp_get_current_user();
+	public function whoami( ?\WP_REST_Request $request = null ): bool {
+		$user = \wp_get_current_user();
 		if ( ! $user->exists() ) {
 			return false;
 		}
