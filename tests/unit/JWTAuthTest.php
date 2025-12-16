@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro;
 
 /**
  * Unit tests for JWT Authentication class
@@ -20,14 +21,9 @@ class JWTAuthTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		// Load the JWT auth class
-		if ( ! class_exists( 'JuanMa_JWT_Auth_Pro' ) ) {
-			require_once dirname( __DIR__, 2 ) . '/includes/class-auth-jwt.php';
-		}
-
-		// Load helpers
-		if ( ! function_exists( 'wp_auth_jwt_generate_token' ) ) {
-			require_once dirname( __DIR__, 2 ) . '/includes/helpers.php';
+		// Verify autoloading works correctly.
+		if ( ! class_exists( 'JM_JWTAuthPro\JuanMa_JWT_Auth_Pro' ) ) {
+			throw new \Exception( 'JuanMa_JWT_Auth_Pro not autoloaded. Check composer dump-autoload.' );
 		}
 
 		// Define constants for testing
@@ -48,8 +44,8 @@ class JWTAuthTest extends TestCase {
 	 * Test JWT auth class exists and can be instantiated.
 	 */
 	public function testJWTAuthClassExists(): void {
-		$this->assertTrue( class_exists( 'JuanMa_JWT_Auth_Pro' ) );
-		$this->assertInstanceOf( 'JuanMa_JWT_Auth_Pro', $this->auth_jwt );
+		$this->assertTrue( class_exists( 'JM_JWTAuthPro\JuanMa_JWT_Auth_Pro' ) );
+		$this->assertInstanceOf( 'JM_JWTAuthPro\JuanMa_JWT_Auth_Pro', $this->auth_jwt );
 	}
 
 	/**

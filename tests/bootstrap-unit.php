@@ -60,8 +60,12 @@ if ( ! function_exists( 'wp_json_encode' ) ) {
 	}
 }
 
-// Load only the helpers.php file for basic function testing
-require_once dirname( __DIR__ ) . '/plugin/juanma-jwt-auth-pro/includes/helpers.php';
+// Verify helpers.php loaded via Composer "files" autoload (composer.json).
+// If not available, autoloader wasn't properly initialized.
+if ( ! function_exists( 'wp_auth_jwt_generate_token' ) ) {
+	die( 'Helper functions not autoloaded. Run: cd plugin/juanma-jwt-auth-pro && composer dump-autoload' . PHP_EOL );
+}
 
 echo "JWT Auth Pro WP REST API Unit Test environment loaded successfully!\n";
-echo 'PHP version: ' . PHP_VERSION . "\n\n";
+echo 'PHP version: ' . PHP_VERSION . "\n";
+echo "Helper functions autoloaded: ✓\n\n";

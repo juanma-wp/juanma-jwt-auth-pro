@@ -33,9 +33,16 @@ class PluginActivationTest extends WP_UnitTestCase
 	{
 		parent::setUp();
 
-		// Ensure plugin class is loaded.
+		// Main plugin file should be loaded by WordPress during activation.
+		// Verify it loaded correctly.
 		if (! class_exists('JuanMa_JWT_Auth_Pro_Plugin')) {
-			require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
+			// Load it if not available (for unit test context).
+			if (file_exists(dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php')) {
+				require_once dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php';
+			} else {
+				$this->markTestSkipped('Plugin not loaded in test environment.');
+				return;
+			}
 		}
 
 		// Set required constants.

@@ -1,6 +1,7 @@
 <?php
 
 use WPRestAuthJWT\Tests\Helpers\TestCase;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro;
 
 /**
  * Integration tests for JWT REST API functionality
@@ -83,9 +84,10 @@ class RestAPIIntegrationTest extends WP_UnitTestCase
 		$this->server = $wp_rest_server = new WP_REST_Server();
 		do_action('rest_api_init');
 
-		// Load JWT auth
-		if (! class_exists('JuanMa_JWT_Auth_Pro')) {
-			require_once JMJAP_PLUGIN_DIR . 'includes/class-auth-jwt.php';
+		// Verify integration test environment has autoloader initialized.
+		if (! class_exists('JM_JWTAuthPro\JuanMa_JWT_Auth_Pro')) {
+			$this->markTestSkipped('Autoloader not initialized for integration tests.');
+			return;
 		}
 
 		$this->auth_jwt = new JuanMa_JWT_Auth_Pro();

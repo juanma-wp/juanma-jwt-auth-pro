@@ -17,6 +17,9 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_OpenAPI_Spec;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Admin_Settings;
 
 /**
  * Unit tests for main JWT plugin class.
@@ -38,7 +41,13 @@ class MainPluginTest extends TestCase
 	{
 		parent::setUp();
 
-		// Load the main plugin class - different path depending on context
+		// Verify plugin classes autoloaded.
+		if (! class_exists('JM_JWTAuthPro\JuanMa_JWT_Auth_Pro')) {
+			throw new \Exception('Plugin classes not autoloaded.');
+		}
+
+		// Load the main plugin file if the plugin class isn't available yet.
+		// Note: JuanMa_JWT_Auth_Pro_Plugin is in global namespace (main file).
 		if (! class_exists('JuanMa_JWT_Auth_Pro_Plugin')) {
 			// In wp-env, files are mounted directly
 			if (file_exists(dirname(__DIR__, 2) . '/juanma-jwt-auth-pro.php')) {

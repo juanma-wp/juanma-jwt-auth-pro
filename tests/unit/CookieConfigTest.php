@@ -20,6 +20,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Cookie_Config;
+use JM_JWTAuthPro\JuanMa_JWT_Auth_Pro;
 
 /**
  * Integration tests for JWT Cookie Configuration wrapper.
@@ -41,15 +43,9 @@ class CookieConfigTest extends TestCase
 	{
 		parent::setUp();
 
-		// Load the cookie config class - check both locations for CI and local
-		if (! class_exists('JuanMa_JWT_Auth_Pro_Cookie_Config')) {
-			if (file_exists(dirname(__DIR__, 2) . '/includes/class-jwt-cookie-config.php')) {
-				// In wp-env, mounted directly
-				require_once dirname(__DIR__, 2) . '/includes/class-jwt-cookie-config.php';
-			} else {
-				// In CI or local, in plugin directory
-				require_once dirname(__DIR__, 2) . '/plugin/juanma-jwt-auth-pro/includes/class-jwt-cookie-config.php';
-			}
+		// Verify classes autoloaded correctly.
+		if (! class_exists('JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Cookie_Config')) {
+			throw new \Exception('Cookie config class not autoloaded.');
 		}
 
 		// Store original $_SERVER values.
@@ -241,11 +237,6 @@ class CookieConfigTest extends TestCase
 	 */
 	public function testCookieNameMatchesAuthJWTConstant(): void
 	{
-		// Load JuanMa_JWT_Auth_Pro class if available
-		if (! class_exists('JuanMa_JWT_Auth_Pro')) {
-			require_once dirname(__DIR__, 2) . '/includes/class-auth-jwt.php';
-		}
-
 		$_SERVER['HTTP_HOST'] = 'localhost';
 		JuanMa_JWT_Auth_Pro_Cookie_Config::clear_cache();
 
