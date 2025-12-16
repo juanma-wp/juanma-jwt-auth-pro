@@ -144,16 +144,6 @@ composer install
 4. **Easier Maintenance**: Clear separation between dev and prod environments
 5. **Faster Installs**: Users don't download unnecessary dev dependencies
 
-## Migration from Single composer.json
-
-If you're migrating from a single composer.json setup:
-
-1. Move production dependencies to `plugin/juanma-jwt-auth-pro/composer.json`
-2. Keep dev dependencies in root `composer.json`
-3. Remove autoload configuration from root (it's in plugin composer.json)
-4. Run `composer install` at root, then `composer run plugin:install`
-5. Update your deployment scripts to handle dual setup
-
 ---
 
 *This dual composer setup follows WordPress plugin development best practices, ensuring clean separation between development and production environments.*

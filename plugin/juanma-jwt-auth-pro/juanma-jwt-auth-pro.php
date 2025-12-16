@@ -52,6 +52,20 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 }
 
+// Verify required toolkit is loaded.
+if ( ! class_exists( 'WPRestAuth\\AuthToolkit\\JWT\\Encoder' ) ) {
+	add_action(
+		'admin_notices',
+		function () {
+			echo '<div class="notice notice-error"><p>';
+			echo '<strong>JuanMa JWT Auth Pro:</strong> Required dependency "wp-rest-auth-toolkit" ';
+			echo 'is not loaded. Run <code>composer install</code> in the plugin directory.';
+			echo '</p></div>';
+		}
+	);
+	return; // Stop loading plugin.
+}
+
 define( 'JMJAP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'JMJAP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'JMJAP_VERSION', '1.2.1' );
@@ -90,7 +104,11 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'plugins_loaded', array( $this, 'init' ) );
+		// Initialize immediately - all dependencies loaded via Composer.
+		// Toolkit is already available (loaded at line 51-52).
+		$this->init();
+
+		// Register lifecycle hooks.
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
@@ -109,16 +127,12 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 	 * Load plugin dependencies.
 	 */
 	private function load_dependencies(): void {
-		// Load non-class files that contain helper functions.
+		// Helper functions file (will move to Composer "files" in Phase 2).
 		require_once JMJAP_PLUGIN_DIR . 'includes/helpers.php';
 
-		// The JuanMa_JWT_Auth_Pro_Admin_Settings class is namespaced but uses WordPress naming convention.
-		// It will be autoloaded via Composer classmap when needed (JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Admin_Settings).
-
-		// Legacy files without namespaces still need require_once.
-		require_once JMJAP_PLUGIN_DIR . 'includes/class-jwt-cookie-config.php';
-		require_once JMJAP_PLUGIN_DIR . 'includes/class-auth-jwt.php';
-		require_once JMJAP_PLUGIN_DIR . 'includes/class-openapi-spec.php';
+		// Classes are autoloaded via Composer classmap.
+		// See composer.json "autoload" → "classmap" section.
+		// After Phase 2 migration, all classes will use PSR-4 autoloading.
 	}
 
 	/**
@@ -152,22 +166,7 @@ class JuanMa_JWT_Auth_Pro_Plugin {
 	private function init_components(): void {
 		// Initialize admin settings.
 		if ( is_admin() ) {
-			// Check if the base class exists before trying to instantiate.
-			if ( class_exists( 'WPRestAuth\AuthToolkit\Admin\BaseAdminSettings' ) ) {
-				new JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Admin_Settings();
-			} else {
-				// Log error or show admin notice about missing dependency.
-				add_action(
-					'admin_notices',
-					function () {
-						?>
-					<div class="notice notice-error">
-						<p><?php esc_html_e( 'JWT Auth Pro: Required dependency "wp-rest-auth-toolkit" is not loaded. Please check your installation.', 'juanma-jwt-auth-pro' ); ?></p>
-					</div>
-						<?php
-					}
-				);
-			}
+			new JM_JWTAuthPro\JuanMa_JWT_Auth_Pro_Admin_Settings();
 		}
 
 		$this->auth_jwt     = new JuanMa_JWT_Auth_Pro();
